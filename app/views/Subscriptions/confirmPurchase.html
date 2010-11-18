@@ -1,0 +1,39 @@
+#{extends 'main.html' /}
+#{set title:'Confirm Purchase ' + subscription.type /}
+
+<h1>Confirm Subscription Purchase</h1>
+
+#{form @confirmPurchase(subscription.id)}
+    <p>
+        <strong>Type:</strong> ${subscription.type}
+    </p>
+    <p>
+        <strong>Price:</strong> ${subscription.price}
+    </p>
+    <p>
+        <strong>Monthly:</strong> ${purchase.monthly}
+        <input type="hidden" name="purchase.monthly" value="${purchase.monthly}">
+    </p>
+    <p>
+        <strong>Total:</strong> ${purchase.total.formatCurrency('USD')}
+    </p>
+    <p>
+        <strong>Start date:</strong> ${purchase.purchaseDate.format('yyyy-MM-dd')}
+        <input type="hidden" name="purchase.purchaseDate" value="${purchase.purchaseDate.format('yyyy-MM-dd')}">
+    </p>
+    <p>
+        <strong>End date:</strong> ${purchase.expireDate.format('yyyy-MM-dd')}
+        <input type="hidden" name="purchase.expireDate" value="${purchase.expireDate.format('yyyy-MM-dd')}">
+    </p>
+    <p>
+        <strong>Credit card #:</strong> ${purchase.creditCard}
+        <input type="hidden" name="purchase.creditCard" value="${purchase.creditCard}">
+        <input type="hidden" name="purchase.creditCardName" value="${purchase.creditCardName}">
+        <input type="hidden" name="purchase.creditCardExpiryMonth" value="${purchase.creditCardExpiryMonth}">
+        <input type="hidden" name="purchase.creditCardExpiryYear" value="${purchase.creditCardExpiryYear}">
+    </p>
+    
+    <p class="buttons">
+        <input type="submit" value="Confirm" name="confirm"> <input type="submit" value="Revise" name="revise"> <a href="@{show(subscription.id)}">Cancel</a>    
+    </p>
+#{/form}

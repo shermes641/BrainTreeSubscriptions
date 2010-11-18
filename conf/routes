@@ -1,0 +1,27 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /                                       Application.index
+POST    /login                                  Application.login
+GET     /logout                                 Application.logout
+
+GET     /settings                               Subscriptions.settings
+POST    /settings                               Subscriptions.saveSettings
+
+GET     /register                               Application.register
+POST    /register                               Application.saveUser
+
+GET     /subscriptions                          Subscriptions.index
+GET     /subscriptions/list                     Subscriptions.list
+GET     /subscriptions/{id}                     Subscriptions.show
+GET     /subscriptions/{id}/buy                 Subscriptions.buy
+POST    /subscriptions/{id}/buy                 Subscriptions.confirmPurchase
+DELETE  /subscriptions/{id}                     Subscriptions.cancelPurchase
+
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/                                staticDir:public
+
+# Catch all
+*       /{controller}/{action}                  {controller}.{action}

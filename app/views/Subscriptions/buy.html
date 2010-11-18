@@ -1,0 +1,100 @@
+#{extends 'main.html' /}
+#{set title:'Purchase ' + purchase.subscription.type /}
+#{set 'moreScripts'}
+    <script src="@{'/public/javascripts/jquery-ui-1.7.2.custom.min.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set}
+#{set 'moreStyles'}
+    <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/ui-lightness/jquery-ui-1.7.2.custom.css'}" />
+#{/set}
+
+<h1>Purchase Subscription</h1>
+
+#{form @confirmPurchase(purchase.subscription.id)}
+    <p>
+        <strong>Type:</strong> ${purchase.subscription.type}
+    </p>
+    <p>
+        <strong>Description:</strong> ${purchase.subscription.descr}
+    </p>
+    <p>
+        <strong>Duration:</strong> ${purchase.subscription.durationMonths}
+    </p>
+    <p>
+        <strong>Start Date:</strong> ${purchase.purchaseDate}
+    </p>
+    <p>
+        <strong>End Date:</strong> ${purchase.expireDate}
+    </p>
+    <p>
+        <strong>Price:</strong> ${purchase.subscription.price}
+    </p>
+    #{field 'purchase.purchaseDate'}
+        <p class="${field.errorClass}">
+            <strong>Start Date:</strong> <input type="text" size="10" name="${field.name}" class="datepicker" value="${purchase?.purchaseDate?.format('yyyy-MM-dd')}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    #{field 'purchase.expireDate'}
+        <p class="${field.errorClass}">
+            <strong>Expire Date:</strong> <input type="text" size="10" name="${field.name}" class="datepicker" value="${purchase?.expireDate?.format('yyyy-MM-dd')}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    <p>
+        <strong>Automatic Renewal:</strong> 
+        #{select 'purchase.autoRenew', value:purchase?.autoRenew}
+            #{option 1}Yes#{/option}
+            #{option 2}No#{/option}
+        #{/select}
+    </p>
+    <p>
+        <strong>Monthly/Annual:</strong> 
+        <input type="radio" name="purchase.monthly" value="true" ${purchase?.monthly ? 'checked' : ''}> Monthly
+        <input type="radio" name="purchase.monthly" value="false" ${purchase?.monthly ? '' : 'checked'}> Annual
+    </p>
+    #{field 'purchase.creditCard'}
+        <p class="${field.errorClass}">
+            <strong>Credit Card #:</strong> <input type="text" name="${field.name}" size="16" value="${purchase?.creditCard}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    #{field 'purchase.creditCardName'}
+        <p class="${field.errorClass}">
+            <strong>Credit Card Name:</strong> <input type="text" name="${field.name}" size="16" value="${purchase?.creditCardName}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    <p>
+        <strong>Credit Card Expiry:</strong> 
+        #{select 'purchase.creditCardExpiryMonth', value:purchase?.creditCardExpiryMonth}
+            #{option 1}Jan#{/option}
+            #{option 2}Feb#{/option}
+            #{option 3}Mar#{/option}
+            #{option 4}Apr#{/option}
+            #{option 5}May#{/option}
+            #{option 6}Jun#{/option}
+            #{option 7}Jul#{/option}
+            #{option 8}Aug#{/option}
+            #{option 9}Sep#{/option}
+            #{option 10}Oct#{/option}
+            #{option 11}Nov#{/option}
+            #{option 112}Dec#{/option}
+        #{/select}
+        #{select 'purchase.creditCardExpiryYear', value:purchase?.creditCardExpiryYear}
+            #{option 2008}2008#{/option}
+            #{option 2009}2009#{/option}
+            #{option 2010}2010#{/option}
+            #{option 2011}2011#{/option}
+            #{option 2012}2012#{/option}
+        #{/select}      
+    </p>    
+    <p class="buttons">
+        <input type="submit" value="Proceed"> <a href="@{show(purchase.subscription.id)}">Cancel</a>    
+    </p>
+#{/form}
+
+<script type="text/javascript" charset="utf-8">
+    $(function() {
+		$(".datepicker").datepicker({dateFormat: 'yy-mm-dd'});
+	});
+</script>

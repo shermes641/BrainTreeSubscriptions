@@ -1,0 +1,36 @@
+#{if subscriptions}
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Months</th>
+                <th>Price $</th>
+            </tr>
+        </thead>
+        <tbody>
+            #{list subscriptions, as:'subscription'}
+                <tr>
+                    <td>${subscription.type}</td>
+                    <td>${subscription.descr}</td>
+                    <td>${subscription.durationMonths}</td>
+                    <td>${subscription.price}</td>
+                    <td>
+                        <a href="@{show(subscription.id)}">View Details</a>
+                    </td>
+                </tr>
+            #{/list}
+        </tbody>
+    </table>
+    <p>
+    	#{if cnt-(page*size)  > 0}
+        	<a id="nextPage" href="${page+1}">More results</a>
+        #{/if}
+    </p>
+#{/if}
+
+#{else}
+    <p>
+        No more results
+    </p>
+#{/else}      

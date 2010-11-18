@@ -1,0 +1,49 @@
+# Users
+
+models.User(gavin):
+    username:   guillaume
+    password:   foobar
+    name:       Guillaume Bort
+    
+models.User(demo):
+    username:   demo
+    password:   demo
+    name:       Demo User
+
+# Subscriptions
+
+models.Subscription(s1):
+    type:           Annual
+    descr:          Platinum Annual Membership
+    durationMonths: 12
+    price:          599.99
+
+models.Subscription(s2):
+    type:           Monthly
+    descr:          Platinum Monthly Membership
+    durationMonths: 1
+    price:          99.99
+
+models.Subscription(s3):
+    type:           Annual
+    descr:          Gold Annual Membership
+    durationMonths: 12
+    price:          299.99
+
+models.Subscription(s4):
+    type:           Monthly
+    descr:          Gold Monthly Membership
+    durationMonths: 1
+    price:          49.99
+
+models.Subscription(s5):
+    type:           Annual
+    descr:          Silver Annual Membership
+    durationMonths: 12
+    price:          149.99
+
+models.Subscription(s6):
+    type:           Monthly
+    descr:          Silver Monthly Membership
+    durationMonths: 1
+    price:          19.99

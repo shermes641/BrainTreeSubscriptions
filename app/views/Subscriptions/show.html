@@ -1,0 +1,23 @@
+#{extends 'main.html' /}
+#{set title:subscription.type /}
+
+<h1>View Subscription</h1>
+
+#{form @buy(subscription.id)}
+    <p>
+        <strong>Type:</strong> ${subscription.type}
+    </p>
+    <p>
+        <strong>Description:</strong> ${subscription.descr}
+    </p>
+    <p>
+        <strong>Duration:</strong> ${subscription.durationMonths}
+    </p>
+     <p>
+        <strong>Price:</strong> ${subscription.price}
+    </p>
+    
+    <p class="buttons">
+        <input type="submit" value="Buy Subscription"> <a href="@{index()}">Back to search</a>      
+    </p>
+#{/form}
