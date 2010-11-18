@@ -1,0 +1,7 @@
+This app implements a play framework 1.1 based payment service.
+http://www.playframework.org
+
+The payment gateway is BrainTree, and uses their JAVA API.
+http://www.braintreepaymentsolutions.com/docs/java
+
+The current version uses a sandbox at BrainTree
