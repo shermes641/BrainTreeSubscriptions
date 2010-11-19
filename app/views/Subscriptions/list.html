@@ -23,8 +23,12 @@
         </tbody>
     </table>
     <p>
-    	#{if cnt-(page*size)  > 0}
-        	<a id="nextPage" href="${page+1}">More results</a>
+    	#{if page > 1}
+    	    <a id="nextPage" href="${page-1}">Prev page </a>
+        #{/if}
+		page ${page} of  ${cnt}
+        #{if page < cnt}
+    	    <a id="nextPage" href="${page+1}">Next page </a>
         #{/if}
     </p>
 #{/if}

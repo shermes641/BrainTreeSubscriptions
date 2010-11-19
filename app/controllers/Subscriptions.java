@@ -9,7 +9,14 @@ import javax.swing.JOptionPane;
 
 import models.*;
 
+/*
+ * 
+ */
 public class Subscriptions extends Application {
+	/*
+	 * check that someone is logged in before rendering,
+	 * if not then return to login page (Application index.html)
+	 */
     @Before
     static void checkUser() {
         if(connected() == null) {
@@ -19,13 +26,16 @@ public class Subscriptions extends Application {
     }
     
     /*
-     * 
+     * Executes when index.html page loads and displays any purchased subscriptions the user has
      */
     public static void index() {
         List<Purchase> purchases = Purchase.find("byUser", connected()).fetch();
         render(purchases);
     }
 
+    /*
+     * 
+     */
     public static void list(String search, Integer size, Integer page) {
         List<Subscription> subscriptions = null;
         page = page != null ? page : 1;
@@ -35,7 +45,7 @@ public class Subscriptions extends Application {
             search = search.toLowerCase();
             subscriptions = Subscription.find("lower(type) like ?", "%"+search+"%").fetch(page, size);
         }
-        Integer cnt = 6;
+        long cnt = (Subscription.count()/size) + 1;
         render(subscriptions, search, size, page, cnt);
     }
     
