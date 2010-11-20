@@ -9,12 +9,14 @@ import javax.swing.JOptionPane;
 
 import models.*;
 
-/*
- * 
+/**
+ * Validates that user is logged in.<br>
+ * Displays the user's purchases.<br>
+ * Allows searching subscriptions and purchasing one.
  */
 public class Subscriptions extends Application {
-	/*
-	 * check that someone is logged in before rendering,
+	/**
+	 * check that someone is logged in before rendering,<br>
 	 * if not then return to login page (Application index.html)
 	 */
     @Before
@@ -25,7 +27,7 @@ public class Subscriptions extends Application {
         }
     }
     
-    /*
+    /**
      * Executes when index.html page loads and displays any purchased subscriptions the user has
      */
     public static void index() {
@@ -33,7 +35,11 @@ public class Subscriptions extends Application {
         render(purchases);
     }
 
-    /*
+    /**
+     * Displays the available subscriptions based on search criteria.<br>
+     * @param search 	string entered in textbox
+     * @param size   	# of line items to display per page
+     * @param page		determines subset of selected line items
      * 
      */
     public static void list(String search, Integer size, Integer page) {
@@ -49,6 +55,11 @@ public class Subscriptions extends Application {
         render(subscriptions, search, size, page, cnt);
     }
     
+    /**
+     * Displays one subscription (line item from search list)<br>
+     * Subscriptions show.html 
+     * @param id key for db
+     */
     public static void show(Long id) {
     	if (id == null)
     		return;
@@ -56,21 +67,30 @@ public class Subscriptions extends Application {
         render(subscription);
     }
     
+    /**
+     * User selected a subscription to buy.<br>
+     * Display Subscriptions buy.html, where user enters info to complete purchase.<br>
+     * @param id 	key for db
+     */
     public static void buy(Long id) {
     	Subscription subscription = Subscription.findById(id);
     	Purchase purchase = new Purchase(subscription,connected());
         render(purchase);
     }
     
-
+    /**
+     * Completes purchase if data is valid.<br>
+     * Displays Subscriptions comfirmPurchase.html
+     * @param id	subscription key
+     * @param purchase	purchase object
+     */
 	public static void confirmPurchase(Long id, Purchase purchase) {
-		//these are already set ???
     	Subscription subscription = Subscription.findById(id);
     	purchase.subscription = subscription;
     	purchase.user = connected();
         validation.valid(purchase);
         
-        // Errors or revise
+        // Errors or user wants to change something
         if(validation.hasErrors() || params.get("revise") != null) {
             render("@buy", purchase.subscription, purchase);
         }
@@ -80,14 +100,18 @@ public class Subscriptions extends Application {
         	//if (purchase.id == null) 
         	//	purchase.id = (long) (purchase.subscription.id * (Math.random() * 100));
         	purchase.save();
-            flash.success("Thank you, %s, your confimation number for %s is %s", connected().name, purchase.subscription.type, purchase.id);
+            flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
             index();
         }
-        
         // Display purchase
         render(purchase.subscription, purchase);
     }
     
+	/**
+	 * User wants to delete a subscription.<br>
+	 *  
+	 * @param id 	purchase key
+	 */
     public static void cancelPurchase(Long id) {
     	Purchase purchase = Purchase.findById(id);
         if (purchase == null){
@@ -102,6 +126,9 @@ public class Subscriptions extends Application {
         index();
     }
     
+    /**
+     * 
+     */
     public static void settings() {
         render();
     }

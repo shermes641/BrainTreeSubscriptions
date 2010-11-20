@@ -1,13 +1,40 @@
 package controllers;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JOptionPane;
+
+import com.braintreegateway.BraintreeGateway;
+import com.braintreegateway.Customer;
+import com.braintreegateway.CustomerRequest;
+import com.braintreegateway.Environment;
+import com.braintreegateway.Result;
+import com.braintreegateway.ValidationErrors;
+
 import play.mvc.*;
 import play.data.validation.*;
+import play.data.validation.Error;
 import models.*;
 
+/**
+ * This app is designed to be stand alone or accessed from other websites.<br>
+ * It uses the BrainTree payment service via the JAVA API<br>
+ * Currently supports Entering credit card info and purchasing subscriptions.
+ * <br><br>!!!!!!!!!!!! NO CC INFO IS STORED IB THIS APP !!!!!!!!!!!!!!!<br>
+ * This makes PCI compliance very simple.<br><br>
+ * Typical use would be for a website to use this site to purchase subscriptions.<br>
+ * Login would be handled by the website and this app would link subscription purchases to the user.<br>
+ * Play supports sharing data models enabling this app to access user data from the website,<br>
+ * and the website to access subscription data.
+ * <br><br>
+ * To support stand alone operation this app can create users and uses the built in PLAY user authentication.
+ * 
+ */
 public class Application extends Controller {
     
-	/*
-	 * Called when a user attempts to login.
+	/**
+	 * Called when a user attempts to login.<br>
 	 * If a valid user add him to the rendering hash map
 	 */
     @Before
@@ -17,8 +44,8 @@ public class Application extends Controller {
             renderArgs.put("user", user);
     }
     
-    /*
-     * If a user is currently logged in, then return that user object,
+    /**
+     * If a user is currently logged in, then return that user object,<br>
      * otherwise if a user is currently logged in, return that user object
      */
     static User connected() {
@@ -34,8 +61,8 @@ public class Application extends Controller {
     
     // ~~
 
-    /*
-     * If a user is logged in then display the Subscriptions main page (Subscriptions index.html), 
+    /**
+     * If a user is logged in then display the Subscriptions main page (Subscriptions index.html),<br> 
      * otherwise display the application login page (Application index.html)
      */
     public static void index() {
@@ -44,42 +71,125 @@ public class Application extends Controller {
         render();
     }
     
-    /*
+    /**
      * Display the register user page (Application register.html)
      */
     public static void register() {
         render();
     }
     
-    /*
-     * If the entered password matches the registered user then display the Subscriptions main page (Subscriptions index.html), 
-     * otherwise display the register user page (Application register.html).
+    /**
+     * If the entered password matches the registered user then display the Subscriptions main page (Subscriptions index.html),<br> 
+     * otherwise display the register user page (Application register.html).<br>
+     * @param user 				user object from db
+     * @param verifyPassword	pw enter by user
      */
-    public static void saveUser(@Valid User user, String verifyPassword) {
-        validation.required(verifyPassword);
-        validation.equals(verifyPassword, user.password).message("Your password doesn't match");
-        if(validation.hasErrors()) 
-            render("@register", user, verifyPassword);
+    public static void saveUser(@Valid User user, String verifyPassword, String phonenum) {
+
+    	validation.required(verifyPassword);
+        validation.equals(verifyPassword, user.password).message("Your passwords don't match");
+
+        validation.required(phonenum);
+        if (!isPhoneNumberValid(phonenum))
+        	validation.equals(phonenum, "").message("Phone number format incorrect");
+        if(validation.hasErrors()) {
+            //JOptionPane.showMessageDialog(null, "all: " + validation.errors().toString(), "Bad Input", JOptionPane.WARNING_MESSAGE);
+            render("@register", user, phonenum);
+        } else
+        	user.phone = phonenum;
         
+    	BraintreeGateway gateway = new BraintreeGateway(
+                Environment.SANDBOX,
+                "z94gpxrrf7k8nyzh",
+                "pgcmsjwbn47scbd9",
+                "xn33q2r2chttyxyb");
+        
+        CustomerRequest request = new CustomerRequest().
+        firstName(user.firstName).
+        lastName(user.lastName).
+        phone(phonenum);
+        /******
+        //actually all fields are optional
+        company("Jones Co.").
+        email("mark.jones@example.com").
+        fax("419-555-1234").
+        website("http://example.com");
+        *******/
+        Result<Customer> result = gateway.customer().create(request);
+        
+        if (!result.isSuccess()) {
+        	String ss = "Failed to create user \n";
+        	ValidationErrors ve = result.getErrors();
+        	for(int i = 0; i < ve.size();i++)
+        		ss += ve.getAllValidationErrors().get(i)+"\n";
+        	flash.error(ss);
+        	render("@register", user, phonenum);
+        }
+        
+        String ss = result.isSuccess()+"\n";
+        user.customerId = result.getTarget().getId();
+        ss += result.getTarget().getId()+"\n";
+        ss += result.getTarget().getFirstName()+"\n";
+        ss += result.getTarget().getLastName()+"\n";
+        ss += result.getTarget().getPhone()+"\n";
+        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.WARNING_MESSAGE);
+
+    result.isSuccess();
+    // true
+
+    result.getTarget().getId();
+       
+       
         user.save();
         session.put("user", user.username);
-        flash.success("Welcome, " + user.name);
+        flash.success("Welcome, " + user.firstName);
         Subscriptions.index();
     }
     
-    /*
-     * Find the first registered user that matches the login attempt.
-     * If successful, save user name in session hashmap & display the Subscriptions main page (Subscriptions index.html), 
+    /** isPhoneNumberValid: Validate phone number using Java reg ex. 
+    * This method checks if the input string is a valid phone number. 
+    * @param email String. Phone number to validate 
+    * @return boolean: true if phone number is valid, false otherwise. 
+    */
+    public static boolean isPhoneNumberValid(String phoneNumber){  
+    	boolean isValid = false;  
+    	/* Phone Number formats: (nnn)nnn-nnnn; nnnnnnnnnn; nnn-nnn-nnnn 
+    	    ^\\(? : May start with an option "(" . 
+    	    (\\d{3}): Followed by 3 digits. 
+    	    \\)? : May have an optional ")" 
+    	    [- ]? : May have an optional "-" after the first 3 digits or after optional ) character. 
+    	    (\\d{3}) : Followed by 3 digits. 
+    	     [- ]? : May have another optional "-" after numeric digits. 
+    	     (\\d{4})$ : ends with four digits. 
+    	 
+    	         Examples: Matches following <a href="http://mylife.com">phone numbers</a>: 
+    	         (123)456-7890, 123-456-7890, 1234567890, (123)-456-7890 
+    	 
+    	*/  
+    	//Initialize reg ex for phone number.   
+    	String expression = "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";  
+    	CharSequence inputStr = phoneNumber;  
+    	Pattern pattern = Pattern.compile(expression);  
+    	Matcher matcher = pattern.matcher(inputStr);  
+    	if(matcher.matches()){  
+    	isValid = true;  
+    	}  
+    	return isValid;  
+    	}
+    
+    
+    /**
+     * Find the first registered user that matches the login attempt.<br>
+     * If successful, save user name in session hashmap & display the Subscriptions main page (Subscriptions index.html),<br> 
      * otherwise display the application login page (Application index.html).
-     * INPUTS:
-     * 		String username		Entered on login page 
-     * 		String password		Entered on login page
+     * @param		username		Entered on login page 
+     * @param		password		Entered on login page
      */		
     public static void login(String username, String password) {
         User user = User.find("byUsernameAndPassword", username, password).first();
         if(user != null) {
             session.put("user", user.username);
-            flash.success("Welcome, " + user.name);
+            flash.success("Welcome, " + user.firstName);
             Subscriptions.index();         
         }
         // Oops
@@ -88,8 +198,8 @@ public class Application extends Controller {
         index();
     }
     
-    /*
-     * Delete the session and goto login page (Application index.html)
+    /**
+     * Delete the session and go to login page (Application index.html)
      */
     public static void logout() {
         session.clear();

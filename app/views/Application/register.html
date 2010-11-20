@@ -1,33 +1,91 @@
 #{extends 'main.html' /}
 #{set title:'Register' /}
 
-<h1>Register</h1>
-
+ 
 #{form @saveUser()}
-    #{field 'user.username'}
+    <p class="buttons">
+        <input type="submit" value="Register"> <a href="@{index()}">Cancel</a>    
+    </p>
+    #{field 'user.username' }
         <p class="${field.errorClass}">
-            <strong>Username:</strong> <input type="text" name="${field.name}" size="16" value="${user?.username}"> *
-            <span class="error">${field.error}</span>
-        </p>
-    #{/field}
-    #{field 'user.name'}
-        <p class="${field.errorClass}">
-            <strong>Real name:</strong> <input type="text" name="${field.name}" size="16" value="${user?.name}"> *
+            <strong>Username:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.username}" id="fancy" title="This is the username"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.password'}
         <p class="${field.errorClass}">
-            <strong>Password:</strong> <input type="password" name="${field.name}" size="16" value="${user?.password}"> *
+            <strong>Password:</strong> 
+            <input type="password" name="${field.name}" size="40" value="${user?.password}" id="fancy" title="This is the password"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'verifyPassword'}
         <p class="${field.errorClass}">
-            <strong>Verify password:</strong> <input type="password" name="${field.name}" size="16" value="${verifyPassword}"> *
+            <strong>Verify password:</strong> 
+            <input type="password" name="${field.name}" size="40" value="${verifyPassword}"> *
             <span class="error">${field.error}</span>
         </p>
-    #{/field}    
+    #{/field} 
+    #{field 'user.firstName'}
+        <p class="${field.errorClass}">
+            <strong>First name:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.firstName}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+        #{field 'user.lastName'}
+        <p class="${field.errorClass}">
+            <strong>Last name:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.lastName}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+        #{field 'user.company'}
+        <p class="${field.errorClass}">
+            <strong>Company:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.company}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+        #{field 'user.email'}
+        <p class="${field.errorClass}">
+            <strong>Email:</strong> 
+            <input type="text" name="${field.name}" size="50" value="${user?.email}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    #{field 'phonenum'}
+        <p class="${field.errorClass}">
+            <strong>Phone:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${phonenum}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    #{field 'user.fax'}
+        <p class="${field.errorClass}">
+            <strong>Fax:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.fax}"> *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    #{field 'user.website'}
+        <p class="${field.errorClass}">
+            <strong>Website:</strong>
+            <input type="text" name="${field.name}" size="50" value="${user?.website}" > *
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}  
+    
+     
+        
+        #{field 'user.notes'}
+        <p class="${field.errorClass}">
+    <strong>Notes:</strong>
+    <textarea name="${field.name}" class="lines">${user?.notes}</textarea>
+              </p>
+    #{/field}  
+ 	<br><br><br><br><br><br><br><br>
     <p class="buttons">
         <input type="submit" value="Register"> <a href="@{index()}">Cancel</a>    
     </p>
