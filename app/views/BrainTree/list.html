@@ -1,0 +1,40 @@
+#{if subscriptions}
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Months</th>
+                <th>Price $</th>
+            </tr>
+        </thead>
+        <tbody>
+            #{list subscriptions, as:'subscription'}
+                <tr>
+                    <td>${subscription.type}</td>
+                    <td>${subscription.descr}</td>
+                    <td>${subscription.durationMonths}</td>
+                    <td>${subscription.price}</td>
+                    <td>
+                        <a href="@{show(subscription.id)}">View Details</a>
+                    </td>
+                </tr>
+            #{/list}
+        </tbody>
+    </table>
+    <p>
+    	#{if page > 1}
+    	    <a id="nextPage" href="${page-1}">Prev page </a>
+        #{/if}
+		page ${page} of  ${cnt}
+        #{if page < cnt}
+    	    <a id="nextPage" href="${page+1}">Next page </a>
+        #{/if}
+    </p>
+#{/if}
+
+#{else}
+    <p>
+        No more results
+    </p>
+#{/else}      

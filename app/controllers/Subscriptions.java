@@ -7,6 +7,9 @@ import play.data.validation.*;
 import java.util.*;
 import javax.swing.JOptionPane;
 
+import com.braintreegateway.Result;
+import com.braintreegateway.SubscriptionRequest;
+
 import models.*;
 
 /**
@@ -97,11 +100,13 @@ public class Subscriptions extends Application {
         
         // Confirm
         if(params.get("confirm") != null) {
-        	//if (purchase.id == null) 
-        	//	purchase.id = (long) (purchase.subscription.id * (Math.random() * 100));
-        	purchase.save();
-            flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
-            index();
+
+        	Result<com.braintreegateway.Subscription> result = BrainTree.BuySubscription(purchase);
+        	if (result.isSuccess()) {
+        		purchase.save();
+        		flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
+        		index();
+        	}	
         }
         // Display purchase
         render(purchase.subscription, purchase);

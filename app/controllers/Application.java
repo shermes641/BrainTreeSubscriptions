@@ -97,53 +97,18 @@ public class Application extends Controller {
             render("@register", user, phonenum);
         } else
         	user.phone = phonenum;
-        
-    	BraintreeGateway gateway = new BraintreeGateway(
-                Environment.SANDBOX,
-                "z94gpxrrf7k8nyzh",
-                "pgcmsjwbn47scbd9",
-                "xn33q2r2chttyxyb");
-        
-        CustomerRequest request = new CustomerRequest().
-        firstName(user.firstName).
-        lastName(user.lastName).
-        phone(phonenum);
-        /******
-        //actually all fields are optional
-        company("Jones Co.").
-        email("mark.jones@example.com").
-        fax("419-555-1234").
-        website("http://example.com");
-        *******/
-        Result<Customer> result = gateway.customer().create(request);
-        
-        if (!result.isSuccess()) {
-        	String ss = "Failed to create user \n";
-        	ValidationErrors ve = result.getErrors();
-        	for(int i = 0; i < ve.size();i++)
-        		ss += ve.getAllValidationErrors().get(i)+"\n";
-        	flash.error(ss);
-        	render("@register", user, phonenum);
-        }
-        
-        String ss = result.isSuccess()+"\n";
-        user.customerId = result.getTarget().getId();
-        ss += result.getTarget().getId()+"\n";
-        ss += result.getTarget().getFirstName()+"\n";
-        ss += result.getTarget().getLastName()+"\n";
-        ss += result.getTarget().getPhone()+"\n";
-        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.WARNING_MESSAGE);
 
-    result.isSuccess();
-    // true
+        Result<Customer> result = BrainTree.MakeCustomer(user);
+      
+	    if (result.isSuccess()) {
+	        user.customerId = result.getTarget().getId();
+	        user.save();
+	        session.put("user", user.username);
+	        //flash.success("Welcome, " + user.firstName);
+	        Subscriptions.index();
+	    } else 
+        	render("@register", user, user.phone);
 
-    result.getTarget().getId();
-       
-       
-        user.save();
-        session.put("user", user.username);
-        flash.success("Welcome, " + user.firstName);
-        Subscriptions.index();
     }
     
     /** isPhoneNumberValid: Validate phone number using Java reg ex. 

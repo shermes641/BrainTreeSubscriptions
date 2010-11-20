@@ -1,0 +1,111 @@
+#{extends 'mainbt.html' /}
+#{set title:'BrainTree' /}
+<h1>Search Subscriptions</h1>
+<!-- 
+	Text box for searching on the type of Subscription.
+	Currently type is either Monthly or Annual
+	If empty then all Subscriptions are displayed
+ -->
+<p>
+    <input type="text" id="search" size="30">
+    <input type="submit" id="submit" value="Find Subscriptions">
+    <br>
+<!-- 
+	Number of search results to display on each page
+ -->
+    Maximum results: 
+    <select id="size">
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+    </select>
+</p>
+<!-- 
+	div to display the results
+ -->
+<div id="result">
+</div>
+
+<script type="text/javascript" charset="utf-8">
+
+    // Rebuild state
+    $('#search').val(sessvars.search) 
+    //set defaults if first time
+    if(sessvars.page == undefined) {
+        sessvars.page = 1
+    }
+    if(sessvars.size == undefined) {
+        sessvars.size = 10
+    }
+    //select the size item in the dropdown list
+    $('#size option[value='+sessvars.size+']').attr('selected', 'true')
+    // Search function
+    var search = function() {
+        sessvars.search = $('#search').val()
+        sessvars.size = $('#size').val()
+        var listAction = #{jsAction @list(':search', ':size', ':page') /} 
+        $('#result').load(listAction({search: sessvars.search, size: sessvars.size, page: sessvars.page}), function() {
+            $('#content').css('visibility', 'visible')
+        })
+    }
+    
+    // Events handler
+    $('#submit').click(function() {
+        sessvars.page = 1
+        search()
+    })
+    $('#search').keyup(function() {
+        sessvars.page = 1
+        search()
+    })
+    $('#nextPage').live('click', function(e) {
+        sessvars.page = $(this).attr('href')
+        e.preventDefault()
+        search()        
+    })
+    
+    // Init
+    if(sessvars.search != undefined) {
+        $('#content').css('visibility', 'hidden')
+        search()
+    }
+    
+</script>
+
+<!-- 
+	Display the users Subscriptions if any
+ -->
+<h1>Current Subscriptions</h1>
+#{ifnot purchases}
+    <p>
+        You have no subscriptions
+    </p>
+#{/ifnot}
+#{else}
+   <table>
+       <thead>
+           <tr>
+               <th>Type</th>
+               <th>Description</th>
+               <th>Duration</th>
+               <th>Price</th>
+               <th>Confirmation number</th>
+               <th>Action</th>
+           </tr>
+       </thead>
+       <tbody>
+           #{list purchases, as:'purchase'}
+               <tr>
+                   <td>${purchase.subscription.type}</td>
+                   <td>${purchase.subscription.descr}</td>
+                   <td>${purchase.subscription.durationMonths}</td>
+                   <td>${purchase.subscription.price}</td>
+                   <td>${purchase.id}</td>
+                   <td>
+                        #{a @cancelPurchase(purchase.id)}Cancel#{/a}
+                   </td>
+               </tr>
+           #{/list}
+       </tbody>
+   </table> 
+#{/else}

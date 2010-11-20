@@ -4,7 +4,7 @@
  
 #{form @saveUser()}
     <p class="buttons">
-        <input type="submit" value="Register"> <a href="@{index()}">Cancel</a>    
+        <input type="submit" value="Register"> <a href="@{index()}"><b>Cancel</b></a>    
     </p>
     #{field 'user.username' }
         <p class="${field.errorClass}">
@@ -41,14 +41,7 @@
             <span class="error">${field.error}</span>
         </p>
     #{/field}
-        #{field 'user.company'}
-        <p class="${field.errorClass}">
-            <strong>Company:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.company}"> *
-            <span class="error">${field.error}</span>
-        </p>
-    #{/field}
-        #{field 'user.email'}
+    #{field 'user.email'}
         <p class="${field.errorClass}">
             <strong>Email:</strong> 
             <input type="text" name="${field.name}" size="50" value="${user?.email}"> *
@@ -62,17 +55,26 @@
             <span class="error">${field.error}</span>
         </p>
     #{/field}
+    
+<center>====================================================================================</center>
     #{field 'user.fax'}
         <p class="${field.errorClass}">
             <strong>Fax:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.fax}"> *
+            <input type="text" name="${field.name}" size="40" value="${user?.fax}"> 
+            <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    #{field 'user.company'}
+        <p class="${field.errorClass}">
+            <strong>Company:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.company}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.website'}
         <p class="${field.errorClass}">
             <strong>Website:</strong>
-            <input type="text" name="${field.name}" size="50" value="${user?.website}" > *
+            <input type="text" name="${field.name}" size="50" value="${user?.website}" > 
             <span class="error">${field.error}</span>
         </p>
     #{/field}  
@@ -87,6 +89,6 @@
     #{/field}  
  	<br><br><br><br><br><br><br><br>
     <p class="buttons">
-        <input type="submit" value="Register"> <a href="@{index()}">Cancel</a>    
+        <input type="submit" value="Register"> <a href="@{index()}"><b>Cancel</b></a>    
     </p>
 #{/form}

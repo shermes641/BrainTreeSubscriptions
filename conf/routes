@@ -19,6 +19,9 @@ GET     /subscriptions/{id}/buy                 Subscriptions.buy
 POST    /subscriptions/{id}/buy                 Subscriptions.confirmPurchase
 DELETE  /subscriptions/{id}                     Subscriptions.cancelPurchase
 
+GET     /braintree                              BrainTree.index
+GET     /braintree/list                         BrainTree.list
+GET     /braintree/{id}                         BrainTree.show
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public
