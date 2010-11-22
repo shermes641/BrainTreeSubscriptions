@@ -20,15 +20,24 @@ import models.*;
 /**
  * This app is designed to be stand alone or accessed from other websites.<br>
  * It uses the BrainTree payment service via the JAVA API<br>
- * Currently supports Entering credit card info and purchasing subscriptions.
- * <br><br>!!!!!!!!!!!! NO CC INFO IS STORED IB THIS APP !!!!!!!!!!!!!!!<br>
+ * Currently supports:<br>
+ * 1) 	Registering Customers <br>
+ * 2)   Entering credit card info into the BrainTree vault. <br>
+ * 3)   Purchasing subscriptions using vault credit card.
+ * <br><br>!!!!!!!!!!!! NO CC INFO IS STORED IN THIS APP !!!!!!!!!!!!!!!<br>
  * This makes PCI compliance very simple.<br><br>
- * Typical use would be for a website to use this site to purchase subscriptions.<br>
- * Login would be handled by the website and this app would link subscription purchases to the user.<br>
+ * Typical use would be for a website to log in a user and use this site to add customers and make purchases via BrainTree.<br>
+ * The website passes the username as an html parameter and this app links subscription purchases to the user.<br>
+ * If a "username" param is passed, we know a user is logged in. If the user has a customerId then he is a BrainTree customer. <br>
  * Play supports sharing data models enabling this app to access user data from the website,<br>
  * and the website to access subscription data.
  * <br><br>
- * To support stand alone operation this app can create users and uses the built in PLAY user authentication.
+ * To support stand alone operation this app can create users and uses the built in PLAY user authentication.<br.<br>
+ * 
+ * TODO:<br>
+ * 1)	Transaction history<br>
+ * 2)	Multiple credit cards<br>
+ * 3)	Switch to MySQL db<br>
  * 
  */
 public class Application extends Controller {
@@ -42,10 +51,23 @@ public class Application extends Controller {
         User user = connected();
         if(user != null) 
             renderArgs.put("user", user);
+        else {
+        	//html param passed, if existing user then login
+        	String username = params.get("username");
+        	if (username != null){
+        		user = User.find("byUsername", username).first();
+        		if(user != null) {
+                    renderArgs.put("user", user);
+                    session.put("user", user.userName);
+                    flash.success("Welcome, " + user.firstName);
+                    Subscriptions.index();
+        		}    
+        	}
+        }
     }
     
     /**
-     * If a user is currently logged in, then return that user object,<br>
+     * If a user is currently logged in, then return that user object from the db,<br>
      * otherwise if a user is currently logged in, return that user object
      */
     static User connected() {
@@ -79,6 +101,8 @@ public class Application extends Controller {
         //render();
     	user.userName = "";
     	user.password = "";
+    	if (user.website == null)
+    		user.website = "http://";
     	if (user.toolTips == null)
     		user.toolTips = "Hide ToolTips";
         render("@register", user);
@@ -97,6 +121,7 @@ public class Application extends Controller {
     }
     
     /**
+     * Called when the register user page posts.<br>
      * If the entered password matches the registered user then display the Subscriptions main page (Subscriptions index.html),<br> 
      * otherwise display the register user page (Application register.html).<br>
      * @param user 				user object from db
