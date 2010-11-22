@@ -135,7 +135,7 @@ form p.field {
 
 form strong {
     display: block;
-    width: 120px;
+    width: 150px;
     float: left;
     text-align: right;
     margin-right: 20px;
@@ -159,7 +159,7 @@ form .hasError .error {
 }
 
 form .buttons {
-	width:		125px;
+	width:		147px;
     text-align: left;
     background: #dedede;
     padding: 	5px;
@@ -208,6 +208,11 @@ buttons {
 #tooltip.pretty div { width: 220px; text-align: left; }
 
 #tooltip.fancy {
+	background: url('../images/shadow2.png');
+	padding-top: 5em;
+	height: 100px;
+}
+#tooltip.fancy1 {
 	background: url('../images/shadow2.png');
 	padding-top: 5em;
 	height: 100px;

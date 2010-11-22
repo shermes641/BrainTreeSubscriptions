@@ -133,12 +133,17 @@ public class Subscriptions extends Application {
     }
     
     /**
-     * 
+     * Displays the settings page
      */
     public static void settings() {
         render();
     }
     
+    /**
+     * Currently only changes the password
+     * @param password			New password
+     * @param verifyPassword	Must match password  
+     */
     public static void saveSettings(String password, String verifyPassword) {
         User connected = connected();
         connected.password = password;

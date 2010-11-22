@@ -21,13 +21,13 @@ public class User extends Model {
     @MinSize(4)
     @Match(value="^\\w*$", message="Not a valid username")
     public String userName;
-    public static String userNameValidate = "Required <br> 4 to 25 chars <br> Can not contain ^ \\ w* $";
+    public static String userNameToolTip = "Required <br> 4 to 25 chars <br> Can not contain ^ \\ w* $";
 
     @Required
     @MaxSize(15)
     @MinSize(5)
     public String password;
-    public static String passwordValidate = "Required <br> 5 to 15 chars";
+    public static String passwordToolTip = "Required <br> 5 to 15 chars";
     
 	@Required
     @MaxSize(30)
@@ -36,33 +36,33 @@ public class User extends Model {
 	@Required
     @MaxSize(30)
     public String lastName;
-    public static String nameValidate = "Required <br> Max 30 chars";
+    public static String nameToolTip = "Required <br> Max 30 chars";
 
 	@Required
     @MaxSize(50)
     @Email(message="Email format incorrect") 
     public String email;
-    public static String emailValidate = "Required <br> Max 50 chars <br> Valid format name@website.com (.net etc..)";
+    public static String emailToolTip = "Required <br> Max 50 chars <br> Valid format name@website.com (.net etc..)";
 
 	//Required but we do a custom validation in the Application controller
     @MaxSize(25)
 	public String phone;
-    public static String phoneValidate = "Required <br> Phone Number formats: (nnn)nnn-nnnn; nnnnnnnnnn; nnn-nnn-nnnn";
+    public static String phoneToolTip = "Required <br> Phone Number formats: (nnn)nnn-nnnn; nnnnnnnnnn; nnn-nnn-nnnn";
 
     //Not required but we do a custom validation in the Application controller
     @MaxSize(25)
 	public String cellPhone;
-    public static String nrPhoneValidate = "Not Required <br> Phone Number formats: (nnn)nnn-nnnn; nnnnnnnnnn; nnn-nnn-nnnn";
+    public static String nrPhoneToolTip = "Not Required <br> Phone Number formats: (nnn)nnn-nnnn; nnnnnnnnnn; nnn-nnn-nnnn";
     
     @MaxSize(50)
 	public String addrLine1;
     @MaxSize(50)
 	public String addrLine2;
-    public static String addrLineValidate = "Not Required <br> Max 50 chars";
+    public static String addrLineToolTip = "Not Required <br> Max 50 chars";
     
     @MaxSize(50)
     public String company;
-    public static String companyValidate = "Not Required <br> Max 50 chars";
+    public static String companyToolTip = "Not Required <br> Max 50 chars";
 
     @MaxSize(25)
 	public String fax;
@@ -70,11 +70,11 @@ public class User extends Model {
     @MaxSize(255)
 	@URL
     public String website;
-    public static String websiteValidate = "Not Required <br> Max 255 chars <br> Must start with http://";
+    public static String websiteToolTip = "Not Required <br> Max 255 chars <br> Must start with http://";
 
     @MaxSize(255)
     public String notes;
-    public static String notesValidate = "Not Required <br> Max 255 chars";
+    public static String notesToolTip = "Not Required <br> Max 255 chars";
    
     /**
      *	BrainTree uses most of the user fields.<br>

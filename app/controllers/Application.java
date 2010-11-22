@@ -43,8 +43,9 @@ import models.*;
 public class Application extends Controller {
     
 	/**
-	 * Called when a user attempts to login.<br>
-	 * If a valid user add him to the rendering hash map
+	 * Called to validate if a user is logged in.<br>
+	 * If a username html param was passed in then he is validated and logged in.<br>
+	 * If true rendering hash map.
 	 */
     @Before
     static void addUser() {
@@ -60,7 +61,7 @@ public class Application extends Controller {
                     renderArgs.put("user", user);
                     session.put("user", user.userName);
                     flash.success("Welcome, " + user.firstName);
-                    Subscriptions.index();
+                    index();
         		}    
         	}
         }
@@ -68,7 +69,8 @@ public class Application extends Controller {
     
     /**
      * If a user is currently logged in, then return that user object from the db,<br>
-     * otherwise if a user is currently logged in, return that user object
+     * Users get validated at the page level and the session level.<br>
+     * @return		Loggin user or null if no user validated.
      */
     static User connected() {
         if(renderArgs.get("user") != null) 
@@ -95,7 +97,7 @@ public class Application extends Controller {
     
     /**
      * Display the register user page (Application register.html)
-     * @param user 
+     * @param user 	data to fill form in
      */
     public static void register(User user) {
         //render();
@@ -105,18 +107,6 @@ public class Application extends Controller {
     		user.website = "http://";
     	if (user.toolTips == null)
     		user.toolTips = "Hide ToolTips";
-        render("@register", user);
-    }
-    public static void setToolTip(User user) {
-        //render();
-    	user.userName = "";
-    	user.password = "";
-    	if (user.toolTips == null)
-    		user.toolTips = "Show ToolTips";
-    	if (user.toolTips.equals("Show ToolTips"))
-    		user.toolTips = "Hide ToolTips";
-    	else
-    		user.toolTips = "Show ToolTips";
         render("@register", user);
     }
     

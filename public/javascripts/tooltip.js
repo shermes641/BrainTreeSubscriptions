@@ -347,7 +347,7 @@ $("select").tooltip({
 $("map > area").tooltip({ positionLeft: true });
 
 
-$("#fancy, #fancy2").tooltip({
+$("#fancy, #fancy1, #fancy2").tooltip({
 
 	track: true,
 

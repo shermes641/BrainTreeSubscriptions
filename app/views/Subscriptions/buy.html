@@ -28,15 +28,19 @@
     <p>
         <strong>Price:</strong> ${purchase.subscription.price}
     </p>
+    
+    <!-- Every field that uses datepicker must have a different id -->
     #{field 'purchase.purchaseDate'}
         <p class="${field.errorClass}">
-            <strong>Start Date:</strong> <input type="text" size="10" name="${field.name}" class="datepicker" value="${purchase?.purchaseDate?.format('yyyy-MM-dd')}"> *
+            <strong>Start Date:</strong> <input type="text" size="10" name="${field.name}" class="datepicker" value="${purchase?.purchaseDate?.format('yyyy-MM-dd')}"
+            id="fancy" title="${purchase?.purchaseDateToolTip}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'purchase.expireDate'}
         <p class="${field.errorClass}">
-            <strong>Expire Date:</strong> <input type="text" size="10" name="${field.name}" class="datepicker" value="${purchase?.expireDate?.format('yyyy-MM-dd')}"> *
+            <strong>Expire Date:</strong> <input type="text" size="10" name="${field.name}" class="datepicker" value="${purchase?.expireDate?.format('yyyy-MM-dd')}"
+            id="fancy1" title="${purchase?.expireDateToolTip}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
@@ -54,13 +58,15 @@
     </p>
     #{field 'purchase.creditCard'}
         <p class="${field.errorClass}">
-            <strong>Credit Card #:</strong> <input type="text" name="${field.name}" size="16" value="${purchase?.creditCard}"> *
+            <strong>Credit Card #:</strong> <input type="text" name="${field.name}" size="16" value="${purchase?.creditCard}"
+            id="fancy" title="${purchase?.creditCardToolTip}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'purchase.creditCardName'}
         <p class="${field.errorClass}">
-            <strong>Credit Card Name:</strong> <input type="text" name="${field.name}" size="16" value="${purchase?.creditCardName}"> *
+            <strong>Credit Card Name:</strong> <input type="text" name="${field.name}" size="16" value="${purchase?.creditCardName}"
+            id="fancy" title="${purchase?.creditCardNameToolTip}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
@@ -87,7 +93,10 @@
             #{option 2011}2011#{/option}
             #{option 2012}2012#{/option}
         #{/select}      
-    </p>    
+    </p>  
+    <p class="buttons">
+	 		<input type="button" id = "block" value="Hide/Show ToolTips">
+	 	</p>  
     <p class="buttons">
         <input type="submit" value="Proceed"> <a href="@{show(purchase.subscription.id)}">Cancel</a>    
     </p>
