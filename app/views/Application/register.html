@@ -1,94 +1,110 @@
-#{extends 'main.html' /}
+#{extends 'mainbt.html' /}
 #{set title:'Register' /}
 
- 
+
+<!--  HEADER START  Maybe we want a header like this, but probably not
+
+<div style="height: 100px; width: 670px"><img src="../public/images/sports.jpg" width="269" style="float: right"/>
+	<div  style="height: 17px; width: 10px">
+	</div>
+	<div  style="height: 26px; width: 73px">
+		<button id="block" style="width: 250px; height: 25px">Click to Hide/Display ToolTips</button>
+	</div>
+</div>
+
+      HEADER END -->
+
 #{form @saveUser()}
-    <p class="buttons">
-        <input type="submit" value="Register"> <a href="@{index()}"><b>Cancel</b></a>    
-    </p>
-    #{field 'user.username' }
+    #{field 'user.userName' }
         <p class="${field.errorClass}">
             <strong>Username:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.username}" id="fancy" title="This is the username"> *
+            <input type="text" name="${field.name}" size="40" value="${user?.userName}" id="fancy" title="${user?.userNameValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.password'}
         <p class="${field.errorClass}">
             <strong>Password:</strong> 
-            <input type="password" name="${field.name}" size="40" value="${user?.password}" id="fancy" title="This is the password"> *
+            <input type="password" name="${field.name}" size="40" value="${user?.password}" id="fancy" title="${user?.passwordValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'verifyPassword'}
         <p class="${field.errorClass}">
             <strong>Verify password:</strong> 
-            <input type="password" name="${field.name}" size="40" value="${verifyPassword}"> *
+            <input type="password" name="${field.name}" size="40" value="${verifyPassword}" id="fancy" title="${user?.passwordValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field} 
     #{field 'user.firstName'}
         <p class="${field.errorClass}">
             <strong>First name:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.firstName}"> *
+            <input type="text" name="${field.name}" size="40" value="${user?.firstName}" id="fancy" title="${user?.nameValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
         #{field 'user.lastName'}
         <p class="${field.errorClass}">
             <strong>Last name:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.lastName}"> *
+            <input type="text" name="${field.name}" size="40" value="${user?.lastName}" id="fancy" title="${user?.nameValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.email'}
         <p class="${field.errorClass}">
             <strong>Email:</strong> 
-            <input type="text" name="${field.name}" size="50" value="${user?.email}"> *
+            <input type="text" name="${field.name}" size="50" value="${user?.email}" id="fancy" title="${user?.emailValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'phonenum'}
         <p class="${field.errorClass}">
             <strong>Phone:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${phonenum}"> *
+            <input type="text" name="${field.name}" size="40" value="${phonenum}" id="fancy" title="${user?.phoneValidate}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
-    
-<center>====================================================================================</center>
+
     #{field 'user.fax'}
         <p class="${field.errorClass}">
             <strong>Fax:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.fax}"> 
+            <input type="text" name="${field.name}" size="40" value="${user?.fax}" id="fancy" title="${user?.nrPhoneValidate}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.company'}
         <p class="${field.errorClass}">
             <strong>Company:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.company}"> 
+            <input type="text" name="${field.name}" size="40" value="${user?.company}" id="fancy" title="${user?.companyValidate}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.website'}
         <p class="${field.errorClass}">
             <strong>Website:</strong>
-            <input type="text" name="${field.name}" size="50" value="${user?.website}" > 
+            <input type="text" name="${field.name}" size="50" value="${user?.website}" id="fancy" title="${user?.websiteValidate}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}  
-    
-     
-        
-        #{field 'user.notes'}
+    #{field 'user.notes'}
         <p class="${field.errorClass}">
-    <strong>Notes:</strong>
-    <textarea name="${field.name}" class="lines">${user?.notes}</textarea>
-              </p>
+    		<strong>Notes:</strong>
+    		<textarea name="${field.name}" class="lines" value="${user?.notes}" id="fancy" title="${user?.notesValidate}"></textarea>
+        </p>
     #{/field}  
- 	<br><br><br><br><br><br><br><br>
-    <p class="buttons">
-        <input type="submit" value="Register"> <a href="@{index()}"><b>Cancel</b></a>    
-    </p>
-#{/form}
+		<p class="buttons">
+	 		<input type="button" id = "block" value="${user?.toolTips}">
+	 	</p>
+        <p class="buttons">
+        	<input type="submit" value="Register"> <a href="@{index()}"><b>Cancel</b></a>    
+		</p>
+ 	#{/form}
+
+
+
+
+
+
+
+
+

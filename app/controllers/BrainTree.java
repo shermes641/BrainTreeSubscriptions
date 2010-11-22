@@ -29,10 +29,17 @@ public class BrainTree extends Application {
     	SubscriptionRequest request = new SubscriptionRequest().
         paymentMethodToken("bcr_cc").
         planId("Platinum");
-
-    	Result<com.braintreegateway.Subscription> result = BrainTree.gateway.subscription().create(request);
-    	DisplayResult(result,purchase);
-    	return result;
+    	
+    	Result<com.braintreegateway.Subscription> result = null;
+    	try{
+    		result = BrainTree.gateway.subscription().create(request);
+    		DisplayResult(result,purchase);
+    		return result;
+    	} catch(Exception e) {
+    		//JOptionPane.showMessageDialog(null, "Unable to reach "+e.getMessage()+"\nTry again later", "EXCEPTION", JOptionPane.WARNING_MESSAGE);
+    		flash.error("Unable to reach "+e.getMessage()+"\nTry again later");
+    		return result;
+    	}
 	}
 
 	public static Result<Customer> MakeCustomer(User user) {
@@ -48,9 +55,17 @@ public class BrainTree extends Application {
         website("http://example.com");
         *******/
         
-		Result<Customer> result = BrainTree.gateway.customer().create(request);
-		DisplayResult(result);
-		return result;
+    	Result<Customer> result = null;
+    	try{
+    		result = BrainTree.gateway.customer().create(request);
+    		DisplayResult(result);
+    		return result;
+    	} catch(Exception e) {
+    		//JOptionPane.showMessageDialog(null, "Unable to reach "+e.getMessage()+"\nTry again later", "EXCEPTION", JOptionPane.WARNING_MESSAGE);
+    		flash.error("Unable to reach "+e.getMessage()+"\nTry again later");
+    		return result;
+    	}
+
 	}
 	
 	
@@ -72,7 +87,7 @@ public class BrainTree extends Application {
         ss += result.getTarget().getFirstBillingDate()+"\n";
         ss += result.getTarget().getNextBillingDate()+"\n";
         flash.success(ss);
-        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private static void DisplayResult(Result<Customer> result) {
@@ -91,7 +106,7 @@ public class BrainTree extends Application {
         ss += result.getTarget().getLastName()+"\n";
         ss += result.getTarget().getPhone()+"\n";
         flash.success(ss);
-        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 

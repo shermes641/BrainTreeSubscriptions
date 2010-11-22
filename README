@@ -5,3 +5,34 @@ The payment gateway is BrainTree, and uses their JAVA API.
 http://www.braintreepaymentsolutions.com/docs/java
 
 The current version uses a sandbox at BrainTree
+
+Well now we can register a user (customer) at BrainTree and get his customer ID.
+And I added a quick purchase transaction that uses a credit card that is already in the vault. It uses a credit card token so we store not cc data
+
+1) From the main page click "New User"
+2) Enter the required fields. Notice the validation errors and cool tooltips (you can even turn tooltips off)
+3) Click "Register" to submit the user to the sandbox. If it fails it will flash the error. If it succeeds you are registered with BrainTree.
+   If you click "Cancel" you are returned to the main login page.
+
+If you want to make a purchase then:
+
+1) Login as demo/demo on the main page
+2) Click "Find Subscriptions", you should get a list os subscriptions
+3) Click "View Details", a view of the subscription comes up. Click "Buy Subscription"
+4) The Purchase Subscription page is displayed. Enter a start and end date (pop up calendar). Enter 16 digits for credit card, and a credit card name.
+   NOTE: This will not be necessary in the next version, as a customer must enter a credit card into the vault.
+5) Click "Purchase" and the Confirm Subscription Purchase page is displayed.
+6) Click "Confirm" and the purchase is submitted to the sandbox. If it fails it will flash the error. If it succeeds you are returned to the main Subscription page.
+
+TODO:
+1) Add tooltips to more pages
+2) Show subscriptions that have been purchased
+3) Add credit card, address, billing address to vault
+4) Config data for types of credit card validations
+5) Internationalization
+6) Convert in memory db to MySQL tables
+7) I'm sure theres more
+
+
+
+

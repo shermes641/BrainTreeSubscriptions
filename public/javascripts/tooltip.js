@@ -351,7 +351,7 @@ $("#fancy, #fancy2").tooltip({
 
 	track: true,
 
-	delay: 0,
+	delay: 500,
 
 	showURL: false,
 
@@ -400,8 +400,8 @@ $('#right2 a').tooltip({ showURL: false, positionLeft: true });
 
 
 $("#block").click($.tooltip.block);
-
-
+ 
+$("#block").css('value', 'hello');
 
 });
 

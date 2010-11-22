@@ -11,6 +11,7 @@
         <script src="@{'/public/javascripts/sessvars.js'}" type="text/javascript" charset="utf-8"></script>
         <script src="@{'/public/javascripts/tooltip.js'}" type="text/javascript" charset="utf-8"></script>
         #{get 'moreScripts' /}
+        
     </head>
     <body>
         
@@ -18,7 +19,7 @@
             <h1>Subscription Service</h1>
                 <div id="options">
             #{if user?.id}
-                    Connected as ${user.username}
+                    Connected as ${user.userName}
                     |
                     <a href="@{Subscriptions.index()}">Search</a>
                     |
@@ -29,7 +30,7 @@
             #{else}
             	Not Connected
             	|
-            	<a href="@{Application.register()}">New User</a>
+            	<a href="@{Application.index()}">Log In</a>
             #{/else}
                 </div>
             
@@ -63,7 +64,7 @@
                 </div>
             #{/if}  
             #{else}
-            	<a href="@{Application.register()}">New User</a>
+            	<a href="@{Application.index()}">Log In</a>
             #{/else}  
             </h1>
             Created with <a href="http://www.playframework.org">play framework</a> 

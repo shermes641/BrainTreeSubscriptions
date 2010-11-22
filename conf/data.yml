@@ -1,14 +1,16 @@
 # Users
 
 models.User(gavin):
-    username:   guillaume
+    userName:   guillaume
     password:   foobar
-    name:       Guillaume Bort
+    firtName:   Guillaume 
+    lastName:   Bort
     
 models.User(demo):
-    username:   demo
+    userName:   demo
     password:   demo
-    name:       Demo User
+    firstName:  Crazy User
+    lastName:   HighTower 
 
 # Subscriptions
 

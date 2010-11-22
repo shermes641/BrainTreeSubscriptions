@@ -18,7 +18,7 @@
             <h1>Subscription Service</h1>
                 <div id="options">
             #{if user?.id}
-                    Connected as ${user.username}
+                    Connected as ${user.userName}
                     |
                     <a href="@{Subscriptions.index()}">Search</a>
                     |
@@ -51,25 +51,30 @@
         </div>
         
         <div id="footer">
-        	<h1>
-            #{if user?.id}
-                <div id="options">
-                	
-                    <a href="@{Subscriptions.index()}">Search</a>
-                    |
-                    <a href="@{Subscriptions.settings()}">Settings</a>
-                    |
-                    <a href="@{Application.logout()}">Logout</a>
-                    |
-                    <a href="@{BrainTree.index()}">BrainTree</a>
-                    
-                </div>
-            #{/if}  
-            #{else}
-            	<a href="@{Application.register()}">New User</a>
-            #{/else}  
-            </h1>
-            Created with <a href="http://www.playframework.org">play framework</a> 
+            <div style="height: 150px; width: 730px">
+            	<img src="/public/images/sports.jpg" width="269" style="float: right"/>
+				<div  style="height: 26px; width: 500px">
+					<h1>
+			            #{if user?.id}
+			                <div id="options">
+			                	
+			                    <a href="@{Subscriptions.index()}">Search</a>
+			                    |
+			                    <a href="@{Subscriptions.settings()}">Settings</a>
+			                    |
+			                    <a href="@{Application.logout()}">Logout</a>
+			                    |
+			                    <a href="@{BrainTree.index()}">BrainTree</a>
+			                    
+			                </div>
+			            #{/if}  
+			            #{else}
+			            	<a href="@{Application.register()}">New User</a>
+			            #{/else} 
+			        </h1>
+			        <a href="http://www.playframework.org">Created with the Play framework</a>			            
+            	</div>
+			</div>
         </div>
         
     </body>

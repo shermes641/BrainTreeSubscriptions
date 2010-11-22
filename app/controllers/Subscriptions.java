@@ -102,6 +102,7 @@ public class Subscriptions extends Application {
         if(params.get("confirm") != null) {
 
         	Result<com.braintreegateway.Subscription> result = BrainTree.BuySubscription(purchase);
+        	if (result != null)
         	if (result.isSuccess()) {
         		purchase.save();
         		flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);

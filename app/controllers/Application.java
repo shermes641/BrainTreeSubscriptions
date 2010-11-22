@@ -73,9 +73,27 @@ public class Application extends Controller {
     
     /**
      * Display the register user page (Application register.html)
+     * @param user 
      */
-    public static void register() {
-        render();
+    public static void register(User user) {
+        //render();
+    	user.userName = "";
+    	user.password = "";
+    	if (user.toolTips == null)
+    		user.toolTips = "Hide ToolTips";
+        render("@register", user);
+    }
+    public static void setToolTip(User user) {
+        //render();
+    	user.userName = "";
+    	user.password = "";
+    	if (user.toolTips == null)
+    		user.toolTips = "Show ToolTips";
+    	if (user.toolTips.equals("Show ToolTips"))
+    		user.toolTips = "Hide ToolTips";
+    	else
+    		user.toolTips = "Show ToolTips";
+        render("@register", user);
     }
     
     /**
@@ -93,21 +111,29 @@ public class Application extends Controller {
         if (!isPhoneNumberValid(phonenum))
         	validation.equals(phonenum, "").message("Phone number format incorrect");
         if(validation.hasErrors()) {
+        	try{
+        	if (user.toolTips == null)
+        		user.toolTips = "Hide ToolTips";
+        	} catch(Exception e){
+        		user.toolTips = "Hide ToolTips";	
+        	}
             //JOptionPane.showMessageDialog(null, "all: " + validation.errors().toString(), "Bad Input", JOptionPane.WARNING_MESSAGE);
-            render("@register", user, phonenum);
+        	render("@register", user, phonenum);
         } else
         	user.phone = phonenum;
 
         Result<Customer> result = BrainTree.MakeCustomer(user);
       
+        if (result != null)
 	    if (result.isSuccess()) {
 	        user.customerId = result.getTarget().getId();
 	        user.save();
-	        session.put("user", user.username);
+	        session.put("user", user.userName);
 	        //flash.success("Welcome, " + user.firstName);
 	        Subscriptions.index();
-	    } else 
-        	render("@register", user, user.phone);
+	    }  
+        user.toolTips = "Hide ToolTips";
+        render("@register", user, phonenum, verifyPassword);
 
     }
     
@@ -153,7 +179,7 @@ public class Application extends Controller {
     public static void login(String username, String password) {
         User user = User.find("byUsernameAndPassword", username, password).first();
         if(user != null) {
-            session.put("user", user.username);
+            session.put("user", user.userName);
             flash.success("Welcome, " + user.firstName);
             Subscriptions.index();         
         }
