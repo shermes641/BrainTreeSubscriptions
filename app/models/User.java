@@ -1,22 +1,29 @@
 package models;
 
+import java.util.Set;
+
 import play.db.jpa.*;
 import play.data.validation.*;
+import play.i18n.Messages;
 
 import javax.persistence.*;
+
+import controllers.UserMessages;
 
 @Entity
 @Table(name="Customer")
 
 public class User extends Model {
-    
-
+	
 	//BrainTree will generate this
 	public String customerId = "";
 	public String toolTips = "Show/Hide ToolTips";
 	
 	//These fields are provided by the user when he registers or updates his info
-    @Required
+	@Required
+	public String lang;
+
+	@Required
     @MaxSize(25)
     @MinSize(4)
     @Match(value="^\\w*$", message="Not a valid username")
@@ -84,7 +91,7 @@ public class User extends Model {
      * @param customerId	Unique identifier for user<br>
      * 	91609 Customer ID has already been taken.  Customer IDs have to be unique.<br> 
      * 	91610 Customer ID is invalid. Valid characters are letters, numbers, - and _.<br>
-     * 	91611 Customer ID is not an allowed ID. We reserve a few words that can’t be used as IDs. “all” and “new” currently cannot be used.<br> 
+     * 	91611 Customer ID is not an allowed ID. We reserve a few words that can not be used as IDs. 'all' and 'new' currently cannot be used.<br> 
      * 	91612 Customer ID is too long. Must be less than or equal to 36 characters.<br><br>
      * @param firstName		<br>
      * 	81608 First name is too long. Must be less than or equal to 255 characters.<br><br>
@@ -106,7 +113,7 @@ public class User extends Model {
      * 	81615 Website is too long. Must be less than or equal to 255 characters.<br><br>
      *	81616 Website is an invalid format.Website must be well-formed. The http:// at the beginning is optional.<br>
      *  	If you want to provide websites that may be not well-formed you can use a custom field.<br><br>
-     * @param username		<br>Not used by BrainTree<br>
+     * @param userName		<br>Not used by BrainTree<br>
      * @param password		<br>Not used by BrainTree<br>
      * @param notes			<br>User entered, free form<br>
      * 	91602 Custom field is invalid.<br>
@@ -125,7 +132,8 @@ public class User extends Model {
     			String website,
     			String userName,
     			String password,
-    			String notes) {
+    			String notes,
+    			String lang) {
     	this.customerId 			= customerId;
         this.firstName 				= firstName;
         this.lastName 				= lastName;
@@ -137,10 +145,24 @@ public class User extends Model {
         this.userName 				= userName;
         this.password 				= password;
         this.notes	 				= notes;
+        if (lang == null)
+        	lang = "en";
+        this.lang 					= lang;
+        
+        setLang(lang,true);
+        
     }
 
     public String toString()  {
         return "User(" + customerId + ","+firstName+","+lastName+","+company+","+email+","+phone+","+fax+","+website+","+userName+","+notes+")";
     }
+
+	public void setLang(String lang, boolean bRefresh) {
+		UserMessages.getMessages(lang,true);		
+	}
+
+	public void setMessages(boolean bRefresh) {
+		UserMessages.getMessages(lang,bRefresh);
+	}
     
 }

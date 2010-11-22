@@ -64,7 +64,18 @@
             <span class="error">${field.error}</span>
         </p>
     #{/field}
-
+	#{field 'user.lang'}
+        <p class="${field.errorClass}">
+        <strong>Language:</strong> 
+        #{select 'user.lang', value:user?.lang}
+            #{option "en"}English#{/option}
+            #{option "sp"}Spanish#{/option}
+            #{option "fr"}French#{/option}
+        #{/select}
+        <span class="error">${field.error}</span>
+        </p>
+    #{/field}
+    
     #{field 'user.fax'}
         <p class="${field.errorClass}">
             <strong>Fax:</strong> 

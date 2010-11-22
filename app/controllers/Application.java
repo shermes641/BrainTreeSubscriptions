@@ -12,6 +12,7 @@ import com.braintreegateway.Environment;
 import com.braintreegateway.Result;
 import com.braintreegateway.ValidationErrors;
 
+import play.i18n.Messages;
 import play.mvc.*;
 import play.data.validation.*;
 import play.data.validation.Error;
@@ -61,7 +62,7 @@ public class Application extends Controller {
                     renderArgs.put("user", user);
                     session.put("user", user.userName);
                     flash.success("Welcome, " + user.firstName);
-                    index();
+                    Subscriptions.index();
         		}    
         	}
         }
@@ -105,6 +106,8 @@ public class Application extends Controller {
     	user.password = "";
     	if (user.website == null)
     		user.website = "http://";
+    	if (user.lang == null)
+    		user.lang = "en";
     	if (user.toolTips == null)
     		user.toolTips = "Hide ToolTips";
         render("@register", user);
@@ -137,10 +140,13 @@ public class Application extends Controller {
         } else
         	user.phone = phonenum;
 
+        //TODO remove this and else
+        if (false) {
         Result<Customer> result = BrainTree.MakeCustomer(user);
       
         if (result != null)
 	    if (result.isSuccess()) {
+	    	user.setMessages(true);
 	        user.customerId = result.getTarget().getId();
 	        user.save();
 	        session.put("user", user.userName);
@@ -149,13 +155,20 @@ public class Application extends Controller {
 	    }  
         user.toolTips = "Hide ToolTips";
         render("@register", user, phonenum, verifyPassword);
+        } else {
+        	user.setMessages(true);
+        	user.save();
+ 	        session.put("user", user.userName);
+ 	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  email: "+user.email));
+ 	        Subscriptions.index();
+        }
 
     }
     
     /** isPhoneNumberValid: Validate phone number using Java reg ex. 
     * This method checks if the input string is a valid phone number. 
-    * @param email String. Phone number to validate 
-    * @return boolean: true if phone number is valid, false otherwise. 
+    * @param phoneNumber 	Phone number to validate 
+    * @return boolean: 		true if phone number is valid, false otherwise. 
     */
     public static boolean isPhoneNumberValid(String phoneNumber){  
     	boolean isValid = false;  
