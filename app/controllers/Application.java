@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,8 @@ import models.*;
  * 3)	Switch to MySQL db<br>
  * 
  */
+
+
 public class Application extends Controller {
     
 	/**
@@ -51,14 +54,18 @@ public class Application extends Controller {
     @Before
     static void addUser() {
         User user = connected();
-        if(user != null) 
+        if(user != null) {
+        	if (user.customerId == null)
+        		user.customerId = "-999";
+        	session.put("customerId", user.customerId);
             renderArgs.put("user", user);
-        else {
+        } else {
         	//html param passed, if existing user then login
         	String username = params.get("username");
         	if (username != null){
         		user = User.find("byUsername", username).first();
         		if(user != null) {
+        			session.put("customerId", user.customerId);
                     renderArgs.put("user", user);
                     session.put("user", user.userName);
                     flash.success("Welcome, " + user.firstName);
@@ -93,9 +100,55 @@ public class Application extends Controller {
     public static void index() {
         if(connected() != null) 
             Subscriptions.index();
-        render();
+        List<Subscription> subscriptions = null;
+       	subscriptions = Subscription.all().fetch();
+       	Subscription subPlat = subscriptions.get(0);
+       	Subscription subGold = subscriptions.get(1);
+       	Subscription subSilv = subscriptions.get(2);
+       	render(subPlat,subGold,subSilv);
     }
     
+    public static void buySubcription(Subscription sub) {
+		if(connected() != null) 
+			BrainTree.index();
+
+		Subscriptions.SubEnum type = Subscriptions.subType.plat12;
+		
+		if (sub.descr.contains("Platinum") ) 
+			type = Subscriptions.subType.plat12;
+
+		if (sub.descr.contains("Gold")  ) 
+			type = Subscriptions.subType.gold12;
+
+		if (sub.descr.contains("Silver")  ) 
+			type = Subscriptions.subType.silv12;
+
+		session.put("action", "buying");
+		session.put("subDescr", sub.descr);
+		session.put("subId", type.ordinal());
+    	switch(type) {
+    		case silv12:
+    			session.put("subType", type.toString());
+   				flash.success("Register with our Subscription service before purchasing the Silver Subscription");
+   				register(connected());
+    			break;
+    		case gold12:	
+    			session.put("subType", type.toString());
+   				flash.success("Register with our Subscription service before purchasing the Gold Subscription");
+   				register(connected());
+    			break;
+    		case plat12:
+    			session.put("subType", type.toString());
+   				flash.success("Register with our Subscription service before purchasing the Platinum Subscription");
+   				register(connected());
+    			break;
+    		default:
+    			flash.error("This never happened to me before");
+    			session.clear();
+    			index();
+    			break;
+    	}
+    }
     /**
      * Display the register user page (Application register.html)
      * @param user 	data to fill form in
@@ -121,7 +174,6 @@ public class Application extends Controller {
      * @param verifyPassword	pw enter by user
      */
     public static void saveUser(@Valid User user, String verifyPassword, String phonenum) {
-
     	validation.required(verifyPassword);
         validation.equals(verifyPassword, user.password).message("Your passwords don't match");
 
@@ -141,7 +193,7 @@ public class Application extends Controller {
         	user.phone = phonenum;
 
         //TODO remove this and else
-        if (false) {
+        if (true) {
         Result<Customer> result = BrainTree.MakeCustomer(user);
       
         if (result != null)
@@ -150,16 +202,18 @@ public class Application extends Controller {
 	        user.customerId = result.getTarget().getId();
 	        user.save();
 	        session.put("user", user.userName);
-	        //flash.success("Welcome, " + user.firstName);
+	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  ID: "+user.customerId));
 	        Subscriptions.index();
 	    }  
         user.toolTips = "Hide ToolTips";
         render("@register", user, phonenum, verifyPassword);
         } else {
+        	user.customerId = "666";
+        	session.put("customerId",user.customerId);
         	user.setMessages(true);
         	user.save();
  	        session.put("user", user.userName);
- 	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  email: "+user.email));
+ 	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  ID: "+user.customerId));
  	        Subscriptions.index();
         }
 

@@ -18,6 +18,11 @@ import models.*;
  * Allows searching subscriptions and purchasing one.
  */
 public class Subscriptions extends Application {
+	
+	public static enum SubEnum {nada, plat12,gold12,silv12,plat1,gold1,silv1};
+
+	public static SubEnum  subType;
+	
 	/**
 	 * check that someone is logged in before rendering,<br>
 	 * if not then return to login page (Application index.html)
@@ -34,7 +39,21 @@ public class Subscriptions extends Application {
      * Executes when index.html page loads and displays any purchased subscriptions the user has
      */
     public static void index() {
-        List<Purchase> purchases = Purchase.find("byUser", connected()).fetch();
+	   if(params.get("cc") != null) {
+		   flash.success(params.get("cc")+"    credit card");
+	   } else {
+		   if (flash.get("success") == null)
+			   flash.success("Do something already");
+ 	   } 
+	   String ss = session.get("action");
+	   String st = session.get("subType");
+	   if ((ss != null) && ss.equals("buying")) {
+		   ss = session.get("subDescr");
+		   if (st != null)
+			   flash.success("Now we need a valid credit card  %s", st);
+		   buy(Long.parseLong(session.get("subId")),ss);
+	   }
+	   List<Purchase> purchases = Purchase.find("byUser", connected()).fetch();
         render(purchases);
     }
 
@@ -75,12 +94,26 @@ public class Subscriptions extends Application {
      * Display Subscriptions buy.html, where user enters info to complete purchase.<br>
      * @param id 	key for db
      */
-    public static void buy(Long id) {
+    public static void buy(Long id, String subDescr) {
     	Subscription subscription = Subscription.findById(id);
     	Purchase purchase = new Purchase(subscription,connected());
+    	purchase.trData = BrainTree.GetCreditCardTrData("http://localhost:8888/subscriptions");
+    	purchase.transparentRedirectUrl = BrainTree.GetTransparentRedirectUrl();
+    	purchase.ccResult = "Not Submitted";
+    	purchase.id = id;
         render(purchase);
     }
     
+    public static void confirmCreditCard(String ccResult) {
+    	//flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
+    	flash.success("Thank you, %s, your confimation number for %s ", connected().firstName, ccResult);
+    	//purch.ccResult = "Submitted  confirmCreditCard";
+		index();
+    	//purch.id = "1";
+		//buy(purch.id);
+    	//render(purch);
+    }
+
     /**
      * Completes purchase if data is valid.<br>
      * Displays Subscriptions comfirmPurchase.html
@@ -145,6 +178,7 @@ public class Subscriptions extends Application {
      * @param verifyPassword	Must match password  
      */
     public static void saveSettings(String password, String verifyPassword) {
+    	/**************
         User connected = connected();
         connected.password = password;
         validation.valid(connected);
@@ -154,6 +188,7 @@ public class Subscriptions extends Application {
             render("@settings", connected, verifyPassword);
         }
         connected.save();
+        ****************/
         flash.success("Password updated");
         index();
     }

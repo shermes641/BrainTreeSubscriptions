@@ -47,6 +47,11 @@ public class Purchase extends Model {
     //TODO make this work
     //# of days till next renewal
     public int autoRenew;
+    
+    //BrainTree Transparent redirect vars
+    public String transparentRedirectUrl;
+    public String trData;
+    public String ccResult;
 
     /**
      *  Created when a user wants to purchase a subscription

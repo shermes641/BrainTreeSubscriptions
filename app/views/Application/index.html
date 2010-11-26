@@ -1,10 +1,79 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
+#{set 'moreScripts'}
+		<script src="@{'/public/javascripts/jquery.kwicks-1.5.1.js'}" type="text/javascript" charset="utf-8"></script>
+		<script src="@{'/public/javascripts/jquery.easing.1.3.js'}" type="text/javascript" charset="utf-8">></script>
+		<script type="text/javascript">
+			$().ready(function() {
+				$('.kwicks').kwicks({
+					max : 420,
+					spacing : 10
+				});
+			});
+		</script>
+#{/set}
+
+#{set 'moreStyles'}
+#{/set}
+
+
+
+
 <div id="login">
     
-    (try with demo/demo)
-
+    
+	<ul class="kwicks horizontal" >
+		<li id="kwick_2">
+			<div id="div_Focus_0" style="display:none">
+				<center>
+				<h1>Silver<br>Subscription</h1>
+				<p>
+				More info about this exciting offer
+				</p>
+				#{form @buySubcription(subSilv), id:'formSilver'}
+		            <input type="submit" value="Purchase Silver" />
+			    #{/form}
+			    </center>
+			</div>
+			<div id="div_Blur_0" style="display:block">
+				<center><h1>Silver<br>Subscription</h1></center>
+			</div>
+		</li>
+		<li id="kwick_3">
+			<div id="div_Focus_1" style="display:none">
+				<center>
+				<h1>Gold<br>Subscription</h1>
+				<p>
+				More info about this even more exciting offer
+				</p>
+				#{form @buySubcription(subGold), id:'formGold'}
+		            <input type="submit" value="Purchase Gold" />
+			    #{/form}
+			    </center>
+			</div>
+			<div id="div_Blur_1" style="display:block">
+				<center><h1>Gold<br>Subscription</h1></center>
+			</div>
+		</li>
+		<li id="kwick_4">
+			<div id="div_Focus_2" style="display:none">
+				<center>
+				<h1>Platinum<br>Subscription</h1>
+				<p>
+				More info about this most exciting offer
+				</p>
+				#{form @buySubcription(subPlat), id:'formPlatinum'}
+		            <input type="submit" value="Purchase Platinum" />
+			    #{/form}
+			    </center>
+			</div>
+			<div id="div_Blur_2" style="display:block">
+				<center><h1>Platinum<br>Subscription</h1></center>
+			</div>
+		</li>
+	</ul>
+(try with demo/demo)
     #{form @login(), id:'formLogin'}
         <p class="field">
             <label>Login Name:</label>
@@ -19,6 +88,9 @@
         </p> 
     #{/form}
 </div>
+
+
+
 
 <script type="text/javascript" charset="utf-8">
     sessvars.$.clearMem()

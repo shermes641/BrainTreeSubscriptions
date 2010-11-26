@@ -3,7 +3,9 @@
 
 <h1>Change your password</h1>
 
-#{form @saveSettings()}
+
+<form method="post" action="http://localhost:8888">
+
     #{field 'connected.password'}
         <p class="${field.errorClass}">
             <strong>Password:</strong> <input type="password" name="password" size="16" value="${connected?.password}"> *
@@ -20,4 +22,5 @@
     <p class="buttons">
         <input type="submit" value="Save"> <a href="@{index()}">Cancel</a>    
     </p>
-#{/form}
+
+</form>

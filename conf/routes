@@ -3,6 +3,7 @@
 # ~~~~
 
 GET     /                                       Application.index
+POST    /                                       Application.index
 POST    /login                                  Application.login
 GET     /logout                                 Application.logout
 GET     /register                               Application.register
@@ -20,7 +21,8 @@ POST    /settings                               Subscriptions.saveSettings
 GET     /braintree                              BrainTree.index
 GET     /braintree/list                         BrainTree.list
 GET     /braintree/{id}                         BrainTree.show
-
+GET     /braintree/creditCard		            BrainTree.creditCard
+POST    /braintree/creditCard		            BrainTree.creditCard
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public
 

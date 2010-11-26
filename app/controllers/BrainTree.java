@@ -8,6 +8,7 @@ import java.util.*;
 import javax.swing.JOptionPane;
 
 import com.braintreegateway.BraintreeGateway;
+import com.braintreegateway.CreditCardRequest;
 import com.braintreegateway.Customer;
 import com.braintreegateway.CustomerRequest;
 import com.braintreegateway.Environment;
@@ -23,6 +24,17 @@ import models.*;
  * Allows searching subscriptions and purchasing one.
  */
 public class BrainTree extends Application {
+	
+	public static String GetTransparentRedirectUrl(){
+		return gateway.transparentRedirect().url();
+	}
+	
+	public static String GetCreditCardTrData(String sRedirectUrl) {
+		CreditCardRequest trParams = new CreditCardRequest().
+			customerId("637084")//.token("bcr_cc")  //steve allan
+			;
+		return gateway.trData(trParams, sRedirectUrl);
+	}
 	
 	public static Result<com.braintreegateway.Subscription> BuySubscription(Purchase purchase) {
     	//bcr_cc
@@ -165,7 +177,58 @@ public class BrainTree extends Application {
 	    public static void show(Long id) {
 	    //	if (id == null)
 	    //		return;
-	    //	Subscription subscription = Subscription.findById(id);
-	        render();
+	    	if (id == null)
+	    		id = (long) 1;
+	    	Subscription subscription = Subscription.findById(id);
+	    	Purchase purch = new Purchase(subscription, connected());
+	    	
+	    	//confirmCreditCard(purch);
+	       // render("@creditCard",purch);
+	    	render();
 	    }
+	    
+	    
+	    public static void confirmCreditCard(Purchase purch) {
+	    	//flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
+	    	flash.success("Thank you, %s, your confimation number for %s ", connected().firstName, purch.ccResult);
+	    	//purch.ccResult = "Submitted  confirmCreditCard";
+			index();
+	    	//purch.id = "1";
+			//buy(purch.id);
+	    	//render(purch);
+	    }
+
+	    /**
+	     * Completes purchase if data is valid.<br>
+	     * Displays Subscriptions comfirmPurchase.html
+	     * @param id	subscription key
+	     * @param purchase	purchase object
+	     */
+		public static void creditCard() {
+			Subscription subscription = Subscription.findById(1);
+	    	Purchase purchase = new Purchase(subscription, connected());
+	        validation.valid(purchase);
+	        
+	        // Errors or user wants to change something
+	        if(validation.hasErrors() || params.get("revise") != null) {
+	            render("@buy", purchase.subscription, purchase);
+	        }
+	        
+	        // Confirm
+	        if(params.get("confirm") != null) {
+
+	        	Result<com.braintreegateway.Subscription> result = BrainTree.BuySubscription(purchase);
+	        	if (result != null)
+	        	if (result.isSuccess()) {
+	        		purchase.save();
+	        		flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
+	        		index();
+	        	}	
+	        }
+	        // Display purchase
+	        render(purchase.subscription, purchase);
+	    }
+
+	    
+	    
 }
