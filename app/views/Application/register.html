@@ -1,4 +1,4 @@
-#{extends 'mainbt.html' /}
+#{extends 'main.html' /}
 #{set title:'Register' /}
 
 
@@ -17,56 +17,57 @@
 #{form @saveUser()}
     #{field 'user.userName' }
         <p class="${field.errorClass}">
-            <strong>Username:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.userName}" id="fancy" title="${user?.userNameToolTip}"> *
+            <strong  id="fancy" title="${user?.userNameToolTip}">Username:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.userName}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.password'}
         <p class="${field.errorClass}">
-            <strong>Password:</strong> 
-            <input type="password" name="${field.name}" size="40" value="${user?.password}" id="fancy" title="${user?.passwordToolTip}"> *
+            <strong id="fancy" title="${user?.passwordToolTip}">Password:</strong> 
+            <input type="password" name="${field.name}" size="40" value="${user?.password}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'verifyPassword'}
         <p class="${field.errorClass}">
-            <strong>Verify password:</strong> 
+            <strong id="fancy" title="${user?.passwordToolTip}">Verify password:</strong> 
             <input type="password" name="${field.name}" size="40" value="${verifyPassword}" id="fancy" title="${user?.passwordToolTip}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field} 
     #{field 'user.firstName'}
         <p class="${field.errorClass}">
-            <strong>First name:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.firstName}" id="fancy" title="${user?.nameToolTip}"> *
+            <strong id="fancy" title="${user?.nameToolTip}">First name:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.firstName}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
         #{field 'user.lastName'}
         <p class="${field.errorClass}">
-            <strong>Last name:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.lastName}" id="fancy" title="${user?.nameToolTip}"> *
+            <strong id="fancy" title="${user?.nameToolTip}">Last name:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.lastName}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
+
     #{field 'user.email'}
         <p class="${field.errorClass}">
-            <strong>Email:</strong> 
-            <input type="text" name="${field.name}" size="50" value="${user?.email}" id="fancy" title="${user?.emailToolTip}"> *
+            <strong id="fancy" title="${user?.emailToolTip}">Email:</strong> 
+            <input type="text" name="${field.name}" size="50" value="${user?.email}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'phonenum'}
         <p class="${field.errorClass}">
-            <strong>Phone:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${phonenum}" id="fancy" title="${user?.phoneToolTip}"> *
+            <strong id="fancy" title="${user?.phoneToolTip}">Phone:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${phonenum}"> *
             <span class="error">${field.error}</span>
         </p>
     #{/field}
 	#{field 'user.lang'}
         <p class="${field.errorClass}">
-        <strong>Language:</strong> 
+        <strong id="fancy" title="Select your prefered language (currently not completely implemented)">Language:</strong> 
         #{select 'user.lang', value:user?.lang}
             #{option "en"}English#{/option}
             #{option "sp"}Spanish#{/option}
@@ -78,36 +79,34 @@
     
     #{field 'user.fax'}
         <p class="${field.errorClass}">
-            <strong>Fax:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.fax}" id="fancy" title="${user?.nrPhoneToolTip}"> 
+            <strong id="fancy" title="${user?.nrPhoneToolTip}">Fax:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.fax}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.company'}
         <p class="${field.errorClass}">
-            <strong>Company:</strong> 
-            <input type="text" name="${field.name}" size="40" value="${user?.company}" id="fancy" title="${user?.companyToolTip}"> 
+            <strong id="fancy" title="${user?.companyToolTip}">Company:</strong> 
+            <input type="text" name="${field.name}" size="40" value="${user?.company}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}
     #{field 'user.website'}
         <p class="${field.errorClass}">
-            <strong>Website:</strong>
-            <input type="text" name="${field.name}" size="50" value="${user?.website}" id="fancy" title="${user?.websiteToolTip}"> 
+            <strong id="fancy" title="${user?.websiteToolTip}">Website:</strong>
+            <input type="text" name="${field.name}" size="50" value="${user?.website}"> 
             <span class="error">${field.error}</span>
         </p>
     #{/field}  
     #{field 'user.notes'}
         <p class="${field.errorClass}">
-    		<strong>Notes:</strong>
-    		<textarea name="${field.name}" class="lines" value="${user?.notes}" id="fancy" title="${user?.notesToolTip}"></textarea>
+    		<strong id="fancy" title="${user?.notesToolTip}">Notes:</strong>
+    		<textarea name="${field.name}" class="lines" value="${user?.notes}"></textarea>
         </p>
     #{/field}  
-		<p class="buttons">
-	 		<input type="checkbox" id = "block" value="${user?.toolTips}">Hide ToolTips
-	 	</p>
+		<br><br>
         <p class="buttons">
-        	<input type="submit" value="Register"> <a href="@{index()}"><b>Cancel</b></a>    
+        	&nbsp&nbsp<input type="submit" value="Register" id="fancy" title="Register with BrainTree"> &nbsp&nbsp<a href="@{index()}"><b>Cancel</b></a>    
 		</p>
  	#{/form}
 

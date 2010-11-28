@@ -13,6 +13,8 @@ GET     /subscriptions                          Subscriptions.index
 GET     /subscriptions/list                     Subscriptions.list
 GET     /subscriptions/{id}                     Subscriptions.show
 GET     /subscriptions/{id}/buy                 Subscriptions.buy
+GET     /subscriptions/verifyCC                 Subscriptions.verifyCC
+POST    /subscriptions/verifyCC                 Subscriptions.verifyCC
 POST    /subscriptions/{id}/buy                 Subscriptions.confirmPurchase
 DELETE  /subscriptions/{id}                     Subscriptions.cancelPurchase
 GET     /settings                               Subscriptions.settings

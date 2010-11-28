@@ -404,8 +404,3 @@ $("#block").click($.tooltip.block);
 $("#block").css('value', 'hello');
 
 });
-
-
-
-
-

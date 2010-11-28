@@ -23,6 +23,7 @@
         <div id="header">
         
             <h1>Subscription Service</h1>
+            
                 <div id="options">
             #{if user?.id}
                     Connected as ${user.userName}
@@ -38,6 +39,8 @@
             	|
             	<a href="@{Application.register()}">New User</a>
             #{/else}
+            	<br><input type="checkbox" id = "block" value="1">
+            	<details id="fancy" title="Hover over the labels (left side of page) to see hints">Hide Label Hints</details>
                 </div>
             
         </div>

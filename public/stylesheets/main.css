@@ -212,10 +212,16 @@ buttons {
 	padding-top: 5em;
 	height: 100px;
 }
+
 #tooltip.fancy1 {
-	background: url('../images/shadow2.png');
+	background: url('../images/shadow_big.png');
 	padding-top: 5em;
 	height: 100px;
+	border: none;
+	width: 500px;
+	padding:20px;
+	height: 300px;
+	opacity: 0.7;
 }
 #tooltip.fancy.viewport-right {
 	background: url('../images/shadow2-reverse.png');

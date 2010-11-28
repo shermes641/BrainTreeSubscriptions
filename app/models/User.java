@@ -17,7 +17,6 @@ public class User extends Model {
 	
 	//BrainTree will generate this
 	public String customerId = "";
-	public String toolTips = "Show/Hide ToolTips";
 	
 	//These fields are provided by the user when he registers or updates his info
 	@Required
@@ -153,6 +152,29 @@ public class User extends Model {
         
     }
 
+    public void UserCopy(User userSrc, User userDest) {
+
+    	userDest.addrLine1				= userSrc.addrLine1;
+    	userDest.addrLine2				= userSrc.addrLine2;
+    	userDest.cellPhone				= userSrc.cellPhone;
+    	userDest.company				= userSrc.company;
+    	userDest.customerId 			= userSrc.customerId;
+    	userDest.email					= userSrc.email;
+    	userDest.fax					= userSrc.fax;
+    	userDest.firstName 				= userSrc.firstName;
+    	userDest.lang 					= userSrc.lang;
+    	userDest.lastName 				= userSrc.lastName;
+    	userDest.notes	 				= userSrc.notes;
+    	userDest.password 				= userSrc.password;
+    	userDest.phone					= userSrc.phone;
+    	userDest.userName 				= userSrc.userName;
+    	userDest.website				= userSrc.website;
+
+        setLang(lang,true);
+    
+}
+
+    
     public String toString()  {
         return "User(" + customerId + ","+firstName+","+lastName+","+company+","+email+","+phone+","+fax+","+website+","+userName+","+notes+")";
     }
@@ -163,6 +185,10 @@ public class User extends Model {
 
 	public void setMessages(boolean bRefresh) {
 		UserMessages.getMessages(lang,bRefresh);
+	}
+
+	public void copy(User connected) {
+		UserCopy(connected, this);
 	}
     
 }

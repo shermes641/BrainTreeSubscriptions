@@ -52,6 +52,8 @@ public class Purchase extends Model {
     public String transparentRedirectUrl;
     public String trData;
     public String ccResult;
+    public String token;
+    public String plan;
 
     /**
      *  Created when a user wants to purchase a subscription

@@ -53,6 +53,6 @@
 	<classpathentry kind="lib" path="F:/PLAY/play-1.1RC3/framework/lib/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="F:/PLAY/play-1.1RC3/framework/lib/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="F:/PLAY/play-1.1RC3/framework/lib/snakeyaml-1.6.jar"/>
-	<classpathentry kind="lib" path="F:/PLAY/play-1.1RC3/framework/lib/braintree-java-2.3.1.jar"/>
+	<classpathentry kind="lib" path="F:/PLAY/play-1.1RC3/framework/lib/braintree-java-2.3.1.jar" sourcepath="F:/PLAY/playframework-play-1.1RC2-153-g5faacb5.zip"/>
 	<classpathentry kind="output" path="eclipse/classes"/>
 </classpath>

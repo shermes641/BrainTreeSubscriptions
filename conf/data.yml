@@ -15,37 +15,37 @@ models.User(demo):
 # Subscriptions
 
 models.Subscription(s1):
-    type:           Annual
+    type:           Platinum
     descr:          Platinum Annual Membership
     durationMonths: 12
     price:          599.99
 
 models.Subscription(s2):
-    type:           Annual
+    type:           Gold
     descr:          Gold Annual Membership
     durationMonths: 12
     price:          299.99
 
 models.Subscription(s3):
-    type:           Annual
+    type:           Silver
     descr:          Silver Annual Membership
     durationMonths: 12
     price:          149.99
 
 models.Subscription(s4):
-    type:           Monthly
+    type:           Platinum
     descr:          Platinum Monthly Membership
     durationMonths: 1
     price:          99.99
 
 models.Subscription(s5):
-    type:           Monthly
+    type:           Gold
     descr:          Gold Monthly Membership
     durationMonths: 1
     price:          49.99
 
 models.Subscription(s6):
-    type:           Monthly
+    type:           Silver
     descr:          Silver Monthly Membership
     durationMonths: 1
     price:          19.99

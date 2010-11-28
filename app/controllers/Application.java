@@ -13,6 +13,7 @@ import com.braintreegateway.Environment;
 import com.braintreegateway.Result;
 import com.braintreegateway.ValidationErrors;
 
+import play.Play;
 import play.i18n.Messages;
 import play.mvc.*;
 import play.data.validation.*;
@@ -45,49 +46,78 @@ import models.*;
 
 
 public class Application extends Controller {
-    
+	
+	public static final boolean PROD_MODE 	= Play.id == "prod"? true : false;
+	public static final String ACTION 		= "action";
+	public static final String BUY 			= "buy";
+	public static final String REGISTER 	= "register";
+
+	public static final String SUB_ID 		= "subId";
+	public static final String SUB_TYPE 	= "subType";
+	public static final String SUB_DESC 	= "subDescr";
+
+	public static final String CUSTOMER 	= "customerId";
+	public static final String USER 		= "user";
+	public static final String LOGOUT 		= "logOut";
+	
+	public static final String FLASH 		= "flash";
+
+	
 	/**
 	 * Called to validate if a user is logged in.<br>
 	 * If a username html param was passed in then he is validated and logged in.<br>
 	 * If true rendering hash map.
 	 */
-    @Before
+	@Before
     static void addUser() {
+		String sCust = session.get(CUSTOMER);
         User user = connected();
         if(user != null) {
-        	if (user.customerId == null)
-        		user.customerId = "-999";
-        	session.put("customerId", user.customerId);
-            renderArgs.put("user", user);
+        	if ((user.customerId == null) && sCust != null)
+        		user.customerId = sCust;
+        	renderArgs.put(USER, user);
         } else {
         	//html param passed, if existing user then login
-        	String username = params.get("username");
-        	if (username != null){
+        	String username = Http.Request.current().querystring;				//gets from cookie ?????? params.get("username");
+        	if (username != null && username != ""){
+        		String[] ss = username.split("=");
+        		if (ss.length < 1)
+        			return;
+        		if (ss[0].toLowerCase().equals("username"))
+        			username = ss[1];
         		user = User.find("byUsername", username).first();
         		if(user != null) {
-        			session.put("customerId", user.customerId);
-                    renderArgs.put("user", user);
-                    session.put("user", user.userName);
+                	if ((user.customerId == null) && sCust != null)
+                		user.customerId = sCust;
+        			session.put(CUSTOMER, user.customerId);
+                    renderArgs.put(USER, user);
+                    session.put(USER, user.userName);
                     flash.success("Welcome, " + user.firstName);
                     Subscriptions.index();
         		}    
         	}
-        }
+        }	
     }
     
     /**
      * If a user is currently logged in, then return that user object from the db,<br>
      * Users get validated at the page level and the session level.<br>
-     * @return		Loggin user or null if no user validated.
+     * @return		Logged in user or null if no user validated.
      */
     static User connected() {
-        if(renderArgs.get("user") != null) 
-            return renderArgs.get("user", User.class);
-        
-        String username = session.get("user");
-        if(username != null) 
+    	User user = null;
+    	user = renderArgs.get(USER, User.class);
+        if(user != null) {
+            return user;
+        }
+    	
+        if(session.get(LOGOUT) != null) 
+            session.put(LOGOUT, null);
+
+        String username = session.get(USER);
+        if(username != null) {
             return User.find("byUsername", username).first();
-       
+        } 
         return null;
     }
     
@@ -123,22 +153,22 @@ public class Application extends Controller {
 		if (sub.descr.contains("Silver")  ) 
 			type = Subscriptions.subType.silv12;
 
-		session.put("action", "buying");
-		session.put("subDescr", sub.descr);
-		session.put("subId", type.ordinal());
+		session.put(ACTION, BUY);
+		session.put(SUB_DESC, sub.descr);
+		session.put(SUB_ID, type.ordinal());
     	switch(type) {
     		case silv12:
-    			session.put("subType", type.toString());
+    			session.put(SUB_TYPE, type.toString());
    				flash.success("Register with our Subscription service before purchasing the Silver Subscription");
    				register(connected());
     			break;
     		case gold12:	
-    			session.put("subType", type.toString());
+    			session.put(SUB_TYPE, type.toString());
    				flash.success("Register with our Subscription service before purchasing the Gold Subscription");
    				register(connected());
     			break;
     		case plat12:
-    			session.put("subType", type.toString());
+    			session.put(SUB_TYPE, type.toString());
    				flash.success("Register with our Subscription service before purchasing the Platinum Subscription");
    				register(connected());
     			break;
@@ -155,14 +185,16 @@ public class Application extends Controller {
      */
     public static void register(User user) {
         //render();
-    	user.userName = "";
-    	user.password = "";
+    	User connected = connected();
+    	if (connected != null) {
+    		user.copy(connected);
+    		user.id = connected.id;
+    	}	
     	if (user.website == null)
     		user.website = "http://";
     	if (user.lang == null)
     		user.lang = "en";
-    	if (user.toolTips == null)
-    		user.toolTips = "Hide ToolTips";
+    	session.put(REGISTER, REGISTER);
         render("@register", user);
     }
     
@@ -171,51 +203,49 @@ public class Application extends Controller {
      * If the entered password matches the registered user then display the Subscriptions main page (Subscriptions index.html),<br> 
      * otherwise display the register user page (Application register.html).<br>
      * @param user 				user object from db
-     * @param verifyPassword	pw enter by user
+     * @param phonenum			phone number entered by user
      */
-    public static void saveUser(@Valid User user, String verifyPassword, String phonenum) {
-    	validation.required(verifyPassword);
-        validation.equals(verifyPassword, user.password).message("Your passwords don't match");
-
+    public static void saveUser(@Valid User user, String phonenum) {
         validation.required(phonenum);
         if (!isPhoneNumberValid(phonenum))
         	validation.equals(phonenum, "").message("Phone number format incorrect");
         if(validation.hasErrors()) {
-        	try{
-        	if (user.toolTips == null)
-        		user.toolTips = "Hide ToolTips";
-        	} catch(Exception e){
-        		user.toolTips = "Hide ToolTips";	
-        	}
             //JOptionPane.showMessageDialog(null, "all: " + validation.errors().toString(), "Bad Input", JOptionPane.WARNING_MESSAGE);
         	render("@register", user, phonenum);
         } else
         	user.phone = phonenum;
 
-        //TODO remove this and else
-        if (true) {
-        Result<Customer> result = BrainTree.MakeCustomer(user);
-      
-        if (result != null)
-	    if (result.isSuccess()) {
-	    	user.setMessages(true);
-	        user.customerId = result.getTarget().getId();
-	        user.save();
-	        session.put("user", user.userName);
-	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  ID: "+user.customerId));
-	        Subscriptions.index();
-	    }  
-        user.toolTips = "Hide ToolTips";
-        render("@register", user, phonenum, verifyPassword);
+        boolean bSuccess = false;
+        
+        if (PROD_MODE) {
+	        Result<Customer> result = BrainTree.MakeCustomer(user);
+	        if (result != null)
+	        	bSuccess = result.isSuccess();  
+	        if (bSuccess)
+	        	user.customerId = result.getTarget().getId();
         } else {
         	user.customerId = "666";
-        	session.put("customerId",user.customerId);
-        	user.setMessages(true);
-        	user.save();
- 	        session.put("user", user.userName);
- 	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  ID: "+user.customerId));
- 	        Subscriptions.index();
+        	bSuccess = true;
         }
+        
+	    if (bSuccess) {
+	    	session.put(REGISTER, null);
+	    	user.setMessages(true);
+	        session.put(CUSTOMER, user.customerId);
+	        session.put(USER, user.userName);
+	        User connected = connected();
+	        if (connected != null) {
+	        	connected.UserCopy(user,connected);
+	        	connected.save();
+	        } else {
+	        	user.save();
+	        }
+
+	        flash.success("Welcome, " + user.firstName+"    "+UserMessages.messages.get("0", "  ID: "+session.get(CUSTOMER)));
+	        Subscriptions.index();
+	    }  
+	    render("@register", user, phonenum);
+
 
     }
     
@@ -250,7 +280,7 @@ public class Application extends Controller {
     	return isValid;  
     	}
     
-    
+        
     /**
      * Find the first registered user that matches the login attempt.<br>
      * If successful, save user name in session hashmap & display the Subscriptions main page (Subscriptions index.html),<br> 
@@ -260,14 +290,26 @@ public class Application extends Controller {
      */		
     public static void login(String username, String password) {
         User user = User.find("byUsernameAndPassword", username, password).first();
+        if(user == null) {
+        	user = User.find("byUsername", username).first();
+        	if(user == null) 
+        		flash.error("Login Failed: user %s  Does not exist",username);
+        	else 
+        		flash.error("Login Failed: Password incorrect");
+        	user = null;
+        }
         if(user != null) {
-            session.put("user", user.userName);
-            flash.success("Welcome, " + user.firstName);
+        	session.put(ACTION, 	null);
+        	session.put(REGISTER, 	null);
+        	session.put(SUB_DESC, 	null);
+        	session.put(SUB_ID, 	null);
+            
+        	session.put(USER, 		user.userName);
+            session.put(CUSTOMER, 	user.customerId);
+            renderArgs.put(USER, 	user);
+            flash.success("Welcome, %s  cust ID: %s", user.firstName, user.customerId);
             Subscriptions.index();         
         }
-        // Oops
-        flash.put("username", username);
-        flash.error("Login failed");
         index();
     }
     
@@ -276,6 +318,7 @@ public class Application extends Controller {
      */
     public static void logout() {
         session.clear();
+        session.put(LOGOUT, LOGOUT);
         index();
     }
 

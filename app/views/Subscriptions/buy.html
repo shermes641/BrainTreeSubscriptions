@@ -1,255 +1,185 @@
-#{extends 'main.html' /}
-#{set title:'Purchase ' + purchase.id /}
+#{extends 'main.html' /} 
+#{set title:'Purchase ' + purch.id /} 
 #{set 'moreScripts'}
-    <script src="@{'/public/javascripts/jquery-ui-1.7.2.custom.min.js'}" type="text/javascript" charset="utf-8"></script>
-    <script src="@{'/public/javascripts/jquery.form.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/jquery-ui-1.7.2.custom.min.js'}"
+	type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/jquery.form.js'}"
+	type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript"> 
-	$.validator.messages.creditcard1 = "invalid selection";
-	$.validator.messages.creditcard2 = "invalid credit card number";
-	$(function() {
-		jQuery(function($){
-			$("#date").mask("99/99/9999");
-		   	$("#phone").mask("(999) 999-9999");
-		   	$("#ssn").mask("999-99-9999");
-		   	$("#field2").mask("9999-9999-9999-9999");
-		});
-		$('form').validate({rules: {field1: {creditcard1: true},field2: {creditcard2: function(){ return $('#cardType').val(); }}}		});
-		$('#cardType').change(function(){$('form').validate().element('#field2');});$('.test1').click(function(){$('#field1').val( $(this).text() );$('form').validate().element('#field1');return false;});
-		$('.test2').click(function(){$('#field2').val( $(this).text() );
-		$('#cardType option[value="' + $(this).attr('data') + '"]').attr('selected', 'selected');$('form').validate().element('#field2');return false;});
-	});
 
-	// wait for the DOM to be loaded 
-	$().ready(function() {
+
+		$.validator.messages.creditcard1 = "invalid selection";
+		$.validator.messages.creditcard2 = "invalid credit card number";
+		$(function() {
+			jQuery(function($){
+				$("#date").mask("99/99/9999");
+			   	$("#phone").mask("(999) 999-9999");
+			   	$("#ssn").mask("999-99-9999");
+			   	$("#field2").mask("9999-9999-9999-9999");
+			   	$("#credit_card[number]").mask("9999-9999-9999-9999");
+			});
+			$('form').validate({rules: {field1: {creditcard1: true},field2: {creditcard2: function(){ return $('#cardType').val(); }}}});
+			$('#cardType').change(function(){$('form').validate().element('#field2');});
+			$('.test2').click(function(){$('#field2').val( $(this).text() );
+			$('#cardType option[value="' + $(this).attr('data') + '"]').attr('selected', 'selected');$('form').validate().element('#field2');return false;});
+			
+			$('#field2').change(function(){
+				$('#ccNumber').val($(this).val());
+				////////alert($(this).val()+'  org val copied val  '+$('#ccNumber').val());
+			});
+		});
+	
+		// wait for the DOM to be loaded 
+		$().ready(function() {
+			// validate the comment form when it is submitted
+			$("#creditCardForm").validate();	
+			// validate signup form on keyup and submit
+			$("#signupForm").validate({
+				rules: {
+					email: {
+						required: true,
+						email: true
+					}
+				},
+				messages: {
+					email: {
+						required: "Please enter a valid email address"
+					}
+				}
+			});
+		});
 		
-		var options = { 
-		        target:        '#output1'   // target element(s) to be updated with server response 
-		        ,beforeSubmit:  showRequest  // pre-submit callback 
-		        ,success:       showResponse  // post-submit callback 
-		 		,url:		   '${purchase?.transparentRedirectUrl}'	
-		        // other available options: 
-		        //type:      type        // 'get' or 'post', override for form's 'method' attribute 
-		        //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
-		        //clearForm: true        // clear all form fields after successful submit 
-		        //resetForm: true        // reset the form after successful submit 
-		        // $.ajax options can be used here too, for example: 
-		        //timeout:   3000 
-		    }; 
-	          
-		    $('#commentForm').ajaxForm(options);
-		    
-		    $('#commentForm').submit(function() {
-		    	var cc = $("#cc_resp").val();
-		    	//alert('cc    '+cc);
-		    	$("#cc_resp").val('Benn here');
-		    	
-		    	if (cc_resp == 'Submit') {
-		    		alert('Already');
-		    		return false;
-		    	}
-		    	var queryString = $('#commentForm').formSerialize();
-		    	////////////////////////alert("\ncommentForm Submit \n"+queryString);
-		        // submit the form 
-		        $(this).ajaxSubmit(); 
-		        //no alert and queryString = 1
-		    	//@confirmCreditCard(queryString);
-		        // return false to prevent normal browser submit and page navigation 
-		        return false; 
-		    });
-		    
-		    
-		 // pre-submit callback 
-		    function showRequest(formData, jqForm, options) { 
-		        // formData is an array; here we use $.param to convert it to a string to display it 
-		        // but the form plugin does this for you automatically when it submits the data 
-		        var queryString = $.param(formData); 
-		     
-		        // jqForm is a jQuery object encapsulating the form element.  To access the 
-		        // DOM element for the form do this: 
-		        // var formElement = jqForm[0]; 
-		     
-		        alert(options.url +' About to submit: \n\n'); // + queryString); 
-		     
-		        // here we could return false to prevent the form from being submitted; 
-		        // returning anything other than false will allow the form submit to continue 
-		        return true; 
-		    } 
-		     
-		    // post-submit callback 
-		    function showResponse(responseText, statusText, xhr, $form)  { 
-		        // for normal html responses, the first argument to the success callback 
-		        // is the XMLHttpRequest object's responseText property 
-		     
-		        // if the ajaxForm method was passed an Options Object with the dataType 
-		        // property set to 'xml' then the first argument to the success callback 
-		        // is the XMLHttpRequest object's responseXML property 
-		     
-		        // if the ajaxForm method was passed an Options Object with the dataType 
-		        // property set to 'json' then the first argument to the success callback 
-		        // is the json data object returned by the server 
-		     
-		        alert('status: ' + statusText + '\n\nresponseText: \n' + responseText + 
-		            '\n\nThe output div should have already been updated with the responseText.'); 
-		        var queryString = $('#commentForm').formSerialize();
-		        alert('\ncommentForm Thank you for your comment!\n'+queryString);
-		        alert(window.location);
-		        window.location = '/braintree/creditCard'; //'/braintree/list';
-		    }
-		    
-		
-		// validate the comment form when it is submitted
-		$("#commentForm").validate();	
-		// validate signup form on keyup and submit
-		$("#signupForm").validate({
-			rules: {
-				firstname: "required",
-				lastname: "required",
-				username: {
-					required: true,
-					minlength: 2
-				},
-				password: {
-					required: true,
-					minlength: 5
-				},
-				confirm_password: {
-					required: true,
-					minlength: 5,
-					equalTo: "#password"
-				},
-				email: {
-					required: true,
-					email: true
-				},
-			},
-			messages: {
-				firstname: "Please enter your firstname",
-				lastname: "Please enter your lastname",
-				username: {
-					required: "Please enter a username",
-					minlength: "Your username must consist of at least 2 characters"
-				},
-				password: {
-					required: "Please provide a password",
-					minlength: "Your password must be at least 5 characters long"
-				},
-				confirm_password: {
-					required: "Please provide a password",
-					minlength: "Your password must be at least 5 characters long",
-					equalTo: "Please enter the same password as above"
-				},
-				email: "Please enter a valid email address",
-				agree: "Please accept our policy"
+		function ToggleDiv(btnId, divId){			
+			divObj = document.getElementById(divId); 		 
+			btnObj = document.getElementById(btnId); 		 
+			if (divObj && btnObj) {
+				if (divObj.style.display != 'block') {
+		 			divObj.style.display = 'block';
+		 			btnObj.value = 'hide info';
+				} else {
+		 			divObj.style.display = 'none';
+		 			btnObj.value = 'show info';
+				}	
+				//alert(obj.style.display+'  click ');
+			} else {
+				alert(' no objclick ');
 			}
-		});
-	});
-</script> 
-#{/set}
+		};
+	</script>
+			
 
+#{/set} 
 #{set 'moreStyles'}
-	<style type="text/css"> 
-		#commentForm { width: 700px;}
-		#commentForm label { width: 350px; }
-		#commentForm strong { width: 300px; }
-		#commentForm label.error, #commentForm input.submit { margin-left: 350px; }
-
-	</style>	
+	<style type="text/css">
+	#creditCardForm {
+		width: 700px;
+	}
+	
+	#creditCardForm label {
+		width: 350px;
+	}
+	
+	#creditCardForm strong {
+		width: 300px;
+	}
+	
+	#creditCardForm label.error,#creditCardForm input.submit {
+		margin-left: 350px;
+	}
+	</style>
 #{/set}
 
-<form class="cmxform" id="commentForm" method="post" action="/" enctype="multipart/form-data">   
-    <p>
-        <strong>Type:</strong> ${purchase.subscription.type}
-    </p>
-    <p>
-        <strong>Description:</strong> ${purchase.subscription.descr}
-    </p>
-    <p>
-        <strong>Duration:</strong> ${purchase.subscription.durationMonths}
-    </p>
-     <p>
-        <strong>Price:</strong> ${purchase.subscription.price}
-    </p>5126-8499-0469-4302<br><br>
+<form class="cmxform" id="creditCardForm" method="post" action="${purch?.transparentRedirectUrl}" enctype="multipart/form-data">
+	<p><strong>Type:</strong> ${purch.subscription.type}</p>
+	<p><strong>Description:</strong> ${purch.subscription.descr}</p>
+	<p><strong>Duration:</strong> ${purch.subscription.durationMonths}</p>
+	<p><strong>Price:</strong> ${purch.subscription.price}</p>
 	
-	<div id="output1">AJAX response will replace this content.</div><br><br>
-	
-	<fieldset> 
-	#{field 'purchase.trData'}
-        <input type="hidden" name="tr_data" value="${purchase?.trData}">
-    #{/field}
-    #{field 'purchase.ccResult'}
-        <input name="cc_resp", id="cc_resp" value="${purchase?.ccResult}">
-    #{/field}
-    #{field 'purchase.id'}
-        <input name="id", id="id" value="${purchase?.id}">
-    #{/field}
-		<p> 
-			<label for="cname"><strong>Name (required, at least 2 characters)</strong></label> 
-			<input  name="name" class="required" minlength="2" id="fancy" title="Enter a user name please"/> 
-		</p>	
-		<p> 
-			<label for="cemail"><strong>E-Mail (required)</strong></label> 
-			<input id="cemail" name="email" class="required email" /> 
-		</p> 
-		<p> 
-			<label for="curl"><strong>URL (optional)</strong></label> 
-			<input id="curl" name="url" class="url" value="" /> 
-		</p> 
-		<p> 
-			<label for="ccomment"><strong>Your comment (required)</strong></label> 
-			<textarea id="ccomment" name="comment" class="required"></textarea> 
+	<fieldset>
+		#{field 'purch.trData'} 
+			<input type="hidden" name="tr_data" value="${purch?.trData}"> 
+		#{/field} 
+		<br>		
+		<p>
+			<label for="cemail" id="fancy" title="All credit card transactions will be sent to this email"><strong>E-Mail (required)</strong></label> 
+			<input name="email" value="${purch?.user.email}" class="required email"/>
 		</p>
 		<br>
 		<p>
-		<label for="cardnumber"><strong>Card Number</strong></label>	
-		<input id="field2" name="field2" class="required" title="Enter 16 digits, and select card type"/>
+			<label for="cardnumber" id="fancy" title="This is any valid 16 digit credit card number"><strong>Card Number</strong></label> 
+			<input id="field2" name="field2" class="required"/> 
+			<!-- BrainTree needs name="credit_card[number]" field -->
+			<input type="hidden" id="ccNumber" name="credit_card[number]" /> 
+			<!-- Dummy card type, BrainTree figures it out for us -->
+			<input type="hidden" id="cardType" name="cardType" value="MasterCard" class="field">
 		</p>
 		<p>
-		<label for="cardType"><strong>Card Type</strong></label>
-		<select id="cardType" name="cardType" class="field">
-			<option value="AmEx">AmEx</option>
-			<option value="Discover">Discover</option>
-			<option value="MasterCard">MasterCard</option>
-			<option value="Visa">Visa</option>
-			<option value="Visas">Visas</option>
-		</select>
+			<label for="expire" id="fancy" title="The credit card expiration date"><strong>Credit Card Expiry:</strong></label>
+			<select name="credit_card[expiration_month]">
+				<option>01</option>
+				<option>02</option>
+				<option>03</option>
+				<option>04</option>
+				<option>05</option>
+				<option>06</option>
+				<option>07</option>
+				<option>08</option>
+				<option>09</option>
+				<option>10</option>
+				<option>11</option>
+				<option>12</option>
+			</select> 
+			<select name="credit_card[expiration_year]">
+				<option>2011 </option>
+				<option>2012 </option>
+				<option>2013 </option>
+				<option>2014 </option>
+				<option>2015 </option>
+				<option>2016 </option>
+				<option>2017 </option>
+				<option>2018 </option>
+				<option>2019 </option>
+				<option>2020 </option>
+				<option>2021 </option>
+				<option>2022 </option>
+			</select>
 		</p>
-		<p>
-        <label for="expire"><strong>Credit Card Expiry:</strong></label> 
-        #{select 'purchase.creditCardExpiryMonth', value:purchase?.creditCardExpiryMonth}
-            #{option 1}Jan#{/option}
-            #{option 2}Feb#{/option}
-            #{option 3}Mar#{/option}
-            #{option 4}Apr#{/option}
-            #{option 5}May#{/option}
-            #{option 6}Jun#{/option}
-            #{option 7}Jul#{/option}
-            #{option 8}Aug#{/option}
-            #{option 9}Sep#{/option}
-            #{option 10}Oct#{/option}
-            #{option 11}Nov#{/option}
-            #{option 12}Dec#{/option}
-        #{/select}
-        #{select 'purchase.creditCardExpiryYear', value:purchase?.creditCardExpiryYear}
-            #{option 2011}2011#{/option}
-            #{option 2012}2012#{/option}            
-            #{option 2003}2013#{/option}
-            #{option 2014}2014#{/option}
-            #{option 2015}2015#{/option}
-            #{option 2016}2016#{/option}
-            #{option 2017}2017#{/option}
-            #{option 2018}2018#{/option}            
-            #{option 2019}2019#{/option}
-            #{option 2020}2020#{/option}
-            #{option 2021}2021#{/option}
-            #{option 2022}2022#{/option}
-        #{/select}      
-    </p>  
+		<br>
+		<p class="buttons">
+			<strong>
+	 		<input  type="submit" value="Submit" />&nbsp&nbsp&nbsp
+	 		<a href="/"><b>Cancel</b></a>&nbsp&nbsp&nbsp
+	 		</strong>
+	 	</p>
 			
-		<br> 
-		<p> 
-			<input class="submit" type="submit" value="Submit"/> 
-		</p> 
-	</fieldset> 
+	</fieldset>
 </form>
+
+
+<a href="#" onclick="ToggleDiv('infoBtn','infoDiv'); return false;"><input name="infoBtn" id="infoBtn"value="show info"  type="button"/></a>
+<br><br>
+<div id = "infoDiv" name = "infoDiv" style="display: none">
+
+	#{if playId != 'prod'}
+		first: ${purch?.user.firstName} | last: ${purch?.user.lastName} | username: ${purch?.user.userName} | custId: ${purch?.user.customerId}
+		<br>This info is only displayed when we are using the BrainTree sandbox (play id != 'prod').
+		<br>If play id == 'prod' (case sensitive) we will use our real merchant account.
+		<br><br>Valid sandbox cc # 5555555555554444<br><br>
+		This form is for placing credit cards into the BrainTree vault.<br>
+		The forms action attribute must be set to BrainTree's url for TransparentRedirect.<br>
+		Data in the hidden tr_data field is used by BrainTree when placing the credit card in the vault.<br>
+		It must contain the customerId, and the url to redirect to after submission. (other data can be included here)<br>
+		See Subscriptions.buy(Long id, String subDescr) to see how these values are set before loading this page.<br>
+		On redirect, the querystring is used to determine if the submission was successful. 
+		If it was, then a token is returned that represents the credit card in the vault.
+		Once a customer has a credit card in the vault, purchases can be made with the customerId, or the token.<br>  
+	    
+	 
+	#{/if}
+	#{else}
+	PROD INFO
+	#{/else}
+	</div>
+	<br>
 
