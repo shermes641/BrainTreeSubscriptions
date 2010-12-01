@@ -82,6 +82,18 @@ public class User extends Model {
     public String notes;
     public static String notesToolTip = "Not Required <br> Max 255 chars";
    
+    @MaxSize(10)
+    public String subId;
+    public static String subIdToolTip = "Current subscription ID <br> Max 10 chars";
+ 
+    @MaxSize(5)
+    public String term;
+    public static String termToolTip = "Current subscription length <br> Max 10 chars";
+    
+    @MaxSize(6)
+    public String token;
+    public static String tokenToolTip = "Credit Card Token <br> Max 6 chars";
+   
     /**
      *	BrainTree uses most of the user fields.<br>
      *  Alisting of error codes follows.<br><br>
@@ -121,6 +133,9 @@ public class User extends Model {
      * 	81603 Custom field is too long. Custom field values must be less than or equal to 255 characters. <br>
      * 		The error message for this validation error will contain a list of the custom fields that were too long.<br><br>
      */
+    public User() {
+	}
+    
     public User(String customerId,
     			String firstName,
     			String lastName,
@@ -132,7 +147,10 @@ public class User extends Model {
     			String userName,
     			String password,
     			String notes,
-    			String lang) {
+    			String lang,
+    			String subId,
+    			String term,
+    			String token) {
     	this.customerId 			= customerId;
         this.firstName 				= firstName;
         this.lastName 				= lastName;
@@ -144,6 +162,9 @@ public class User extends Model {
         this.userName 				= userName;
         this.password 				= password;
         this.notes	 				= notes;
+        this.subId	 				= subId;
+        this.term	 				= term;
+        this.token	 				= token;
         if (lang == null)
         	lang = "en";
         this.lang 					= lang;
@@ -152,26 +173,30 @@ public class User extends Model {
         
     }
 
-    public void UserCopy(User userSrc, User userDest) {
+    public void UserCopy(User userSrc, User userDest, boolean bAll) {
 
     	userDest.addrLine1				= userSrc.addrLine1;
     	userDest.addrLine2				= userSrc.addrLine2;
     	userDest.cellPhone				= userSrc.cellPhone;
     	userDest.company				= userSrc.company;
-    	userDest.customerId 			= userSrc.customerId;
-    	userDest.email					= userSrc.email;
     	userDest.fax					= userSrc.fax;
     	userDest.firstName 				= userSrc.firstName;
     	userDest.lang 					= userSrc.lang;
     	userDest.lastName 				= userSrc.lastName;
     	userDest.notes	 				= userSrc.notes;
-    	userDest.password 				= userSrc.password;
     	userDest.phone					= userSrc.phone;
-    	userDest.userName 				= userSrc.userName;
     	userDest.website				= userSrc.website;
-
         setLang(lang,true);
-    
+
+        if (bAll) {
+        	userDest.subId	 			= userSrc.subId;
+        	userDest.term				= userSrc.term;
+        	userDest.token	 			= userSrc.token;
+        	userDest.password 			= userSrc.password;
+        	userDest.userName 			= userSrc.userName;
+        	userDest.customerId 		= userSrc.customerId;
+        	userDest.email				= userSrc.email;
+        }
 }
 
     
@@ -187,8 +212,8 @@ public class User extends Model {
 		UserMessages.getMessages(lang,bRefresh);
 	}
 
-	public void copy(User connected) {
-		UserCopy(connected, this);
+	public void copy(User src, boolean bAll) {
+		UserCopy(src, this, bAll);
 	}
     
 }

@@ -25,12 +25,13 @@ import com.braintreegateway.ValidationErrors;
 
 import models.*;
 
+//TODO BrainTree is not prod ready needs features
 /**
  * Validates that user is logged in.<br>
  * Displays the user's purchases.<br>
  * Allows searching subscriptions and purchasing one.
  */
-public class BrainTree extends Application {
+public class BrainTree extends Controller {
 	
 	/**
 	 * Define the BrainTree payment gateway<br>
@@ -49,10 +50,18 @@ public class BrainTree extends Application {
 	 */
     @Before
     static void checkUser() {
-        if(connected() == null) {
+        if(Application.connected() == null) {
             flash.error("Please log in first");
             Application.index();
-        }
+        } 
+        User user = Application.connected();
+        String sCust = session.get(Application.CUSTOMER);
+    	if ((user.customerId == null) && sCust != null)
+    		user.customerId = sCust;
+		session.put(Application.CUSTOMER, user.customerId);
+        session.put(Application.USER, user.userName);
+    	renderArgs.put(Application.USER, user);
+
     }
 
     /**
@@ -109,24 +118,23 @@ public class BrainTree extends Application {
 	 * @param purchase	The purchase we are making
 	 * @return			The results of the transaction
 	 */
-	public static Result<com.braintreegateway.Subscription> BuySubscription(Purchase purchase) {
-    	//TODO hand in cc token bcr_cc
-		purchase.token = "bcr_cc";
-		purchase.plan = "Platinum";
+	public static String BuySubscription(String sToken, String sPlan) {
     	SubscriptionRequest request = new SubscriptionRequest().
-        paymentMethodToken(purchase.token).
+        paymentMethodToken(sToken).
         //TODO get subscription from purchase
-        planId(purchase.plan);
+        planId(sPlan);
     	
     	Result<com.braintreegateway.Subscription> result = null;
+    	String ss = "";
     	try{
     		result = BrainTree.gateway.subscription().create(request);
-    		DisplayResult(result);
-    		return result;
+    		ss = DisplayResult(result);
+    		return ss;
     	} catch(Exception e) {
     		//JOptionPane.showMessageDialog(null, "Unable to reach "+e.getMessage()+"\nTry again later", "EXCEPTION", JOptionPane.WARNING_MESSAGE);
-    		flash.error("Unable to reach "+e.getMessage()+"\nTry again later");
-    		return result;
+    		flash.error("Unable to reach "+e.getLocalizedMessage()+"\nTry again later");
+    		ss = "false\n"+e.getLocalizedMessage();
+    		return ss;
     	}
 	}
 
@@ -165,10 +173,15 @@ public class BrainTree extends Application {
 	
     /**
      * Executes when index.html page loads and displays any purchased subscriptions the user has
+     * @param user 
      */
     public static void index() {
-        List<Purchase> purchases = Purchase.find("byUser", connected()).fetch();
-        render(purchases);
+    	User user = Application.connected();
+    	if (user == null)
+    		Application.index(false);
+    	List<Purchase> purchases = null;
+   		purchases = Purchase.find("byUser", user).fetch();
+     	render(purchases);
     }
     
     
@@ -198,6 +211,13 @@ public class BrainTree extends Application {
      * @param id key for db
      */
     public static void show(Long id) {
+    	
+		//TODO not sure if I should render() or set id to a sub id
+		if (id == null)
+			index();
+		Subscription subscription = Subscription.findById(id);
+		render(subscription);
+
     //	if (id == null)
     //		return;
     	
@@ -216,7 +236,7 @@ public class BrainTree extends Application {
     
     public static void confirmCreditCard(Purchase purch) {
     	//flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
-    	flash.success("Thank you, %s, your confimation number for %s ", connected().firstName, purch.ccResult);
+    	flash.success("Thank you, %s, your confimation number for %s ", Application.connected().firstName, purch.ccResult);
     	//purch.ccResult = "Submitted  confirmCreditCard";
 		index();
     	//purch.id = "1";
@@ -224,34 +244,7 @@ public class BrainTree extends Application {
     	//render(purch);
     }
 
-    /**
-     * Completes purchase if data is valid.<br>
-     * Displays Subscriptions comfirmPurchase.html
-     */
-	public static void creditCard() {
-		Subscription subscription = Subscription.findById(1);
-    	Purchase purchase = new Purchase(subscription, connected());
-        validation.valid(purchase);
-        
-        // Errors or user wants to change something
-        if(validation.hasErrors() || params.get("revise") != null) {
-            render("@buy", purchase.subscription, purchase);
-        }
-        
-        // Confirm
-        if(params.get("confirm") != null) {
 
-        	Result<com.braintreegateway.Subscription> result = BrainTree.BuySubscription(purchase);
-        	if (result != null)
-        	if (result.isSuccess()) {
-        		purchase.save();
-        		flash.success("Thank you, %s, your confimation number for %s is %s", connected().firstName, purchase.subscription.type, purchase.id);
-        		index();
-        	}	
-        }
-        // Display purchase
-        render(purchase.subscription, purchase);
-    }
 
 	static String DisplayResult(Result<?> result) {
 		String ss = result.isSuccess()+"\n";
@@ -264,7 +257,7 @@ public class BrainTree extends Application {
         	Map<String, String> param = result.getParameters();
     		ss += param.toString();
         	flash.error(ss);
-            JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.WARNING_MESSAGE);
+            //JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.WARNING_MESSAGE);
             return "";
         }        
         
@@ -294,7 +287,112 @@ public class BrainTree extends Application {
 	        ss = cc.getTarget().getToken() + "\n" + ss;
         }
         flash.success(ss);
-        JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.INFORMATION_MESSAGE);
+        //JOptionPane.showMessageDialog(null, ss, result.isSuccess()+"", JOptionPane.INFORMATION_MESSAGE);
         return ss;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+    /**
+     * Completes purchase if data is valid.<br>
+     * Displays Subscriptions comfirmPurchase.html
+     */
+	public static void creditCard(String sParams) {
+		Result<CreditCard> result = null;
+		String sToken = "";
+		if (Application.PROD_MODE) {
+			if ((sParams != null) && (sParams != "")) {
+				try {
+					result = BrainTree.gateway.transparentRedirect().confirmCreditCard(sParams);
+				} catch(Exception e){
+					flash.error("BrainTree exception verifying Credit card %s", e.getLocalizedMessage());
+				}	
+			} else {
+				flash.put(Application.FLASH,"querystring was empty, this is a problem");
+			}
+		} else {
+			//TODO remove this as we will never do S2S credit card stuff
+			/****************************************
+			CreditCardRequest request = new CreditCardRequest()
+					.customerId("565084").number("5555555555554444")
+					.expirationDate("05/2012");
+			result = BrainTree.gateway.creditCard().create(request);
+			*****************************************/
+			result = new Result();
+		}
+
+		try {
+			sToken = BrainTree.DisplayResult(result);
+			String[] sParse = sToken.split("\n");
+			if (sParse.length > 0)
+				sToken = sParse[0];
+			else {
+				if (result != null)
+					flash.error(result.toString()+"\nSomething went wrong token:\n%s", sToken);
+				else
+					flash.error("Result null\nSomething went wrong token:\n%s", sToken);
+
+			}
+		} catch (Exception e) {
+			flash.error("Unable to reach " + e.getMessage()
+					+ "\nTry again later");
+			render();
+		}
+		if (result.isSuccess()) {
+			if (Application.PROD_MODE)
+				sParams = "Your credit card is securely stored.";
+			flash.success("Thank you, %s\n%s ", Application.connected().firstName, sParams);
+			// purch.ccResult = "Submitted  verifyCC";
+			sParams = "true";
+			//lets buy the subscription
+			String sSession = session.get(Application.ACTION);
+			if (sSession != null && sSession.equals(Application.BUY)) {
+				session.put(Application.ACTION, null);
+				sSession = session.get(Application.SUB_ID);
+				if (sSession != null) {
+					session.put(Application.SUB_ID, null);
+					sSession = BrainTree.BuySubscription(sToken, sSession);
+					String[] ss = sSession.split("\n");
+					if (ss.length > 0) {
+						sParams = ss[0];
+						for (int i = 1; i < ss.length; i++)
+							sToken += "  "+ss[i];
+					} else 
+						sParams = "false";
+				}
+			}
+			render("@verifyCC",sParams, sToken);
+		} else {
+			sParams = "false";
+			render("@verifyCC",sParams, sToken);
+		}
+    }
+	
+	
+	
+	/**
+	 * User wants to delete a subscription.<br>
+	 * 
+	 * @param id
+	 *            purchase key
+	 */
+	public static void cancelPurchase(Long id) {
+		Purchase purchase = Purchase.findById(id);
+		if (purchase != null) {
+			purchase.delete();
+			flash.success("Subscription cancelled for confirmation number %s",
+				purchase.id);
+		} else
+			flash.error("Could not locate Purchased Subscription %d", id);
+		index();
+	}
+
+	
+	
+	
 }

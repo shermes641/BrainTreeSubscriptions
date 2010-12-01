@@ -1,0 +1,84 @@
+#{extends 'main.html' /}
+#{set title:'verifyCC.html' /}
+
+#{set 'moreScripts'}
+<script type="text/javascript"> 
+function Register(){			
+	window.location = '/register';
+};
+
+</script>
+#{/set}
+
+	<p><div id="result" style="width=500px">1234</div></p>
+<!-- Token: &nbsp&nbsp&nbsp&nbsp${sToken}<br> -->
+#{if sParams == 'true'}
+	<p><strong>TODO:<br>Add sub id to user</strong><br><br></p><br><br><br>
+	<script type="text/javascript">
+		var st = '${sToken}';
+		var l = st.length;
+		var more = 'no more '+l;
+		if (l > 3)
+			token = st.substring(0,4);
+		if (l > 50) {
+			ss = st.split(' ');
+			more = ""
+			for (i=2; i < ss.length; i+=2) {
+				sl = "<b>";
+				switch(i)
+				{
+				case 2:
+				  sl+=	'Tran';
+				  break;
+				case 4:
+					sl+='Toke';
+				  break;
+				case 6:
+					sl+='Plan';
+				  break;
+				case 8:
+					sl+='Cost';
+				  break;
+				default:
+					sl+='????';
+				}
+				sl +=':</b>&nbsp&nbsp&nbsp&nbsp';
+				more += sl+ss[i].substring(0,70)+'<br>';
+			}	
+		} else 
+			more = more+'  what the '+l;
+		divObj = document.getElementById('result'); 		 
+		if (divObj) {
+ 			divObj.style.display = 'block';
+ 			divObj.style.width = '400px';
+ 			divObj.style.overflow = 'hidden';
+ 			divObj.outerHTML = 'Token: '+token+'<br><br>'+more;
+		}	
+	</script>
+	
+#{/if}
+#{else}
+	<script type="text/javascript">
+		divObj = document.getElementById('result'); 		 
+		if (divObj) {
+ 			divObj.style.display = 'block';
+ 			divObj.outerHTML = 'WRONG';
+		}	
+	</script>
+Something went wrong<br><br><br>
+#{if flash.get("error").contains("CUSTOMER_ID_IS_INVALID")}
+	<center><br><br>
+	Your customer ID is invalid.<br><br>Please click register to obtain an ID with our payment service.<br><br>	
+	<a href="#" onclick="window.location = '/register'; return true;"><input name="regBtn" id="regBtn"value="Register"  type="button"/></a>
+	<br><br></center>
+	
+#{/if}
+#{if flash.get("error").contains("CARD_NUMBER_IS_REQUIRED")}
+	<center><br><br>
+	Your credit card is invalid.<br><br>Please click the BACK button to try again.<br><br>	
+	<INPUT TYPE="button" VALUE="BACK" onClick="history.go(-1);return true;"> 
+	<br><br></center>
+	
+#{/if}
+  
+#{/else}

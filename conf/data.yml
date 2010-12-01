@@ -6,11 +6,37 @@ models.User(gavin):
     firtName:   Guillaume 
     lastName:   Bort
     
-models.User(demo):
-    userName:   demo
-    password:   demo
-    firstName:  Crazy User
-    lastName:   HighTower 
+models.User(newuser):
+    userName:   newuser
+    password:   newuser
+    firstName:  New User
+    lastName:   Newby 
+
+#  User(456513,User_ID,NotSoNew,,userid@u.com,1112223333,,http://www.steve.com,userid,)
+models.User(userid):
+    customerId: 456513 
+    firstName:  User_ID
+    lastName:   NotSoNew 
+    email:      userid@u.com
+    phone:      1112223333
+    website:    http://www.steve.com
+    userName:   userid
+    password:   userid
+    notes:      I have a BrainTree customer ID 
+#User(617261,User_Token,Tokener,,usertoken@token.com,5556667777,,http://www.usertoken.com,usertoken,usertoken comments)
+models.User(usertoken):
+    customerId: 617261
+    firstName:  User_Token
+    lastName:   Tokener 
+    email:      usertoken@token.com
+    phone:      5556667777
+    website:    http://www.usertoken.com
+    userName:   usertoken
+    password:   usertoken
+    notes:      I have a BrainTree customer ID and a CC in the vault
+    subId:      Platinum
+    term:       12
+    token:      8z34
 
 # Subscriptions
 

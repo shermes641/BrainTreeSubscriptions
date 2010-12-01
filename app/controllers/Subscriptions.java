@@ -22,28 +22,18 @@ import models.*;
  * Allows searching subscriptions and purchasing one.
  */
 public class Subscriptions extends Application {
-
-	public static enum SubEnum {
-		nada, plat12, gold12, silv12, plat1, gold1, silv1
-	};
-
+	/** subscription identifiers<br>
+	 * If you change or add subscriptions in the db you must change this */
+	public static enum SubEnum {nada, plat12, gold12, silv12, plat1, gold1, silv1};
+	/** Subscription type, mirrors db id field */
 	public static SubEnum subType;
 
-	/**
-	 * check that someone is logged in before rendering,<br>
-	 * if not then return to login page (Application index.html)
-	 */
-	@Before
-	static void checkUser() {
-		if (connected() == null) {
-			flash.error("Please log in first");
-			Application.index();
-		}
-	}
+
 
 	/**
 	 * Executes when index.html page loads and displays any purchased
-	 * subscriptions the user has
+	 * subscriptions the user has.<br>
+	 * Only logged in users with customer IDs can get here.
 	 */
 	public static void index() {
 		if (params.get("cc") != null) {
@@ -56,13 +46,52 @@ public class Subscriptions extends Application {
 		String st = session.get(SUB_ID);
 		if ((ss != null) && ss.equals(BUY)) {
 			ss = session.get(SUB_DESC);
-			if (st != null)
+			if (st != null) {
 				flash.success("Now we need a valid credit card  %s", st);
-			buy(Long.parseLong(session.get(SUB_ID)), ss);
+				
+				
+				{
+					Long subId = Long.parseLong(st);
+					Subscription subscription = Subscription.findById(subId);
+					Purchase purch = new Purchase(subscription, connected());
+					purch.user.customerId = session.get("customerId");
+					if ((purch.user.customerId == null)
+							|| (purch.user.customerId.equals("-999"))) {
+						flash.error("You must register with our payment service before making purchases");
+						register(purch.user);
+					}
+					purch.trData = BrainTree.GetTrDataCreateCC(purch.user.customerId,
+							"localhost:8888/subscriptions/verifyCC", false);
+					// BrainTree.GetCreditCardTrData("http://184.106.128.160:8888/subscriptions/1/buy");
+
+					if (PROD_MODE)
+						purch.transparentRedirectUrl = BrainTree.GetTransparentRedirectUrl();
+					else
+						purch.transparentRedirectUrl = "/subscriptions/verifyCC";
+						
+					purch.ccResult = "Not Submitted";
+					///////////purch.id = subId;
+					purch.plan = purch.subscription.type;
+					purch.save();
+					session.put(SUB_ID, subId);
+					render("@buy",purch, Play.id);	
+				}
+			}	
 		}
+		if (session.get(LOG) != null) 
+			if (session.get(LOG).equals(LOG_IN)) {
+				session.put(LOG,null);
+				//TODO BrainTree pages are not ready yet
+				//if (connected().customerId != null)
+				//BrainTree.index(connected());
+			}
+		if (connected() == null) 
+			Application.register(new User());
+	
 		List<Purchase> purchases = Purchase.find("byUser", connected()).fetch();
 		render(purchases);
 	}
+
 
 	/**
 	 * Displays the available subscriptions based on search criteria.<br>
@@ -76,7 +105,7 @@ public class Subscriptions extends Application {
 	 * 
 	 */
 	public static void list(String search, Integer size, Integer page) {
-		List<Subscription> subscriptions = null;
+ 		List<Subscription> subscriptions = null;
 		page = page != null ? page : 1;
 		if (search.trim().length() == 0) {
 			subscriptions = Subscription.all().fetch(page, size);
@@ -103,7 +132,7 @@ public class Subscriptions extends Application {
 		**************************/	
 		//TODO not sure if I should render() or set id to a sub id
 		if (id == null)
-			return;
+			index();
 		Subscription subscription = Subscription.findById(id);
 		render(subscription);
 	}
@@ -135,58 +164,24 @@ public class Subscriptions extends Application {
 			purch.transparentRedirectUrl = "/subscriptions/verifyCC";
 			
 		purch.ccResult = "Not Submitted";
-		purch.id = subId;
+		/////////purch.id = subId;
 		purch.plan = purch.subscription.type;
+		session.put(ACTION, BUY);
+		session.put(SUB_ID, subId);
+		purch.save();
+		
+		//If the user has a token then just buy the subscription
+		if (purch.user.token != null) {
+			String sParams = "";
+			String sToken = purch.user.token;
+			//let's see the results
+			//render("@verifyCC",sParams, sToken);
+			Application.verifyCC(sParams,sToken);
+		}	
 		render(purch, Play.id);
 	}
 
-	public static void verifyCC() {
-		String sParams = Http.Request.current().querystring;
-		flash.success("verifyCC " + sParams);
-		Result<CreditCard> result = null;
-		String sToken = "";
-		if (PROD_MODE) {
-			if ((sParams != null) && (sParams != "")) {
-				result = BrainTree.gateway.transparentRedirect().confirmCreditCard(sParams);
-			} else {
-				flash.put(FLASH,"querystring was empty, this is a problem");
-			}
-		} else {
-			//TODO remove this as we will never do S2S credit card stuff
-			/****************************************
-			CreditCardRequest request = new CreditCardRequest()
-					.customerId("565084").number("5555555555554444")
-					.expirationDate("05/2012");
-			result = BrainTree.gateway.creditCard().create(request);
-			*****************************************/
-			result = new Result();
-		}
 
-		try {
-			sToken = BrainTree.DisplayResult(result);
-			String[] sParse = sToken.split("\n");
-			if (sParse.length > 0)
-				sToken = sParse[0];
-			else {
-				if (result != null)
-					flash.error(result.toString()+"\nSomething went wrong token:\n%s", sToken);
-				else
-					flash.error("Result null\nSomething went wrong token:\n%s", sToken);
-
-			}
-		} catch (Exception e) {
-			flash.error("Unable to reach " + e.getMessage()
-					+ "\nTry again later");
-			render();
-		}
-		if (result.isSuccess()) {
-			if (PROD_MODE)
-				sParams = "Your credit card is securely stored.";
-			flash.success("Thank you, %s\n%s ", connected().firstName, sParams);
-			// purch.ccResult = "Submitted  verifyCC";
-			render("@verifyCC", sParams, sToken);
-		}
-	}
 
 	/**
 	 * Completes purchase if data is valid.<br>
@@ -211,17 +206,6 @@ public class Subscriptions extends Application {
 		// Confirm
 		if (params.get("confirm") != null) {
 
-			Result<com.braintreegateway.Subscription> result = BrainTree
-					.BuySubscription(purchase);
-			if (result != null)
-				if (result.isSuccess()) {
-					purchase.save();
-					flash.success(
-							"Thank you, %s, your confimation number for %s is %s",
-							connected().firstName, purchase.subscription.type,
-							purchase.id);
-					index();
-				}
 		}
 		// Display purchase
 		render(purchase.subscription, purchase);
@@ -235,27 +219,12 @@ public class Subscriptions extends Application {
 	 */
 	public static void cancelPurchase(Long id) {
 		Purchase purchase = Purchase.findById(id);
-		if (purchase == null) {
-			JOptionPane.showMessageDialog(null,
-					"Can not find Subscription ID: " + id,
-					"Subscription not Found", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		int iRet = JOptionPane
-				.showConfirmDialog(
-						null,
-						purchase.subscription.type
-								+ "  "
-								+ purchase.purchaseDate
-								+ "  "
-								+ purchase.getMonths()
-								+ "\nAre you sure you want to Delete this Subscription ?",
-						"Delete Subscription", JOptionPane.YES_NO_OPTION);
-		if (iRet == JOptionPane.YES_OPTION) {
+		if (purchase != null) {
 			purchase.delete();
 			flash.success("Subscription cancelled for confirmation number %s",
-					purchase.id);
-		}
+				purchase.id);
+		} else
+			flash.error("Could not locate Purchased Subscription %d", id);
 		index();
 	}
 

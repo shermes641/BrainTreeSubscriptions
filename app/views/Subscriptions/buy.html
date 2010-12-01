@@ -1,41 +1,44 @@
 #{extends 'main.html' /} 
 #{set title:'Purchase ' + purch.id /} 
 #{set 'moreScripts'}
-<script src="@{'/public/javascripts/jquery-ui-1.7.2.custom.min.js'}"
-	type="text/javascript" charset="utf-8"></script>
-<script src="@{'/public/javascripts/jquery.form.js'}"
-	type="text/javascript" charset="utf-8"></script>
+	<script src="@{'/public/javascripts/jquery-ui-1.7.2.custom.min.js'}" type="text/javascript" charset="utf-8"></script>
+	<script src="@{'/public/javascripts/jquery.form.js'}" type="text/javascript" charset="utf-8"></script>
 
-<script type="text/javascript"> 
-
-
+	<script type="text/javascript"> 
+		//Setup extended validation of cc number
 		$.validator.messages.creditcard1 = "invalid selection";
 		$.validator.messages.creditcard2 = "invalid credit card number";
 		$(function() {
 			jQuery(function($){
-				$("#date").mask("99/99/9999");
-			   	$("#phone").mask("(999) 999-9999");
-			   	$("#ssn").mask("999-99-9999");
 			   	$("#field2").mask("9999-9999-9999-9999");
 			   	$("#credit_card[number]").mask("9999-9999-9999-9999");
 			});
+			//set validation rules for cc fields on the form
 			$('form').validate({rules: {field1: {creditcard1: true},field2: {creditcard2: function(){ return $('#cardType').val(); }}}});
+			//executes when form is submitted
+			$('.test2').click(function(){$('#field2').val( $(this).text());
+			//not using this right now
 			$('#cardType').change(function(){$('form').validate().element('#field2');});
-			$('.test2').click(function(){$('#field2').val( $(this).text() );
 			$('#cardType option[value="' + $(this).attr('data') + '"]').attr('selected', 'selected');$('form').validate().element('#field2');return false;});
 			
+			//copy cc # to the BrainTree required field
 			$('#field2').change(function(){
 				$('#ccNumber').val($(this).val());
-				////////alert($(this).val()+'  org val copied val  '+$('#ccNumber').val());
+				//alert($(this).val()+'  org val copied val  '+$('#ccNumber').val());
+			});
+			
+			//if not in prod mode, copy the sandbox cc #, just for convience
+			$('#ccBtn').click(function(){
+				$('#field2').val('5555-5555-5555-4444');
+				$('#ccNumber').val('5555555555554444');
+				//alert($(this).val()+'  org val copied val  '+$('#ccNumber').val());
 			});
 		});
 	
 		// wait for the DOM to be loaded 
 		$().ready(function() {
-			// validate the comment form when it is submitted
-			$("#creditCardForm").validate();	
-			// validate signup form on keyup and submit
-			$("#signupForm").validate({
+			// validate the cc form on keyup and submit
+			$("#creditCardForm").validate({
 				rules: {
 					email: {
 						required: true,
@@ -49,7 +52,8 @@
 				}
 			});
 		});
-		
+
+		//in test mode display some info 
 		function ToggleDiv(btnId, divId){			
 			divObj = document.getElementById(divId); 		 
 			btnObj = document.getElementById(btnId); 		 
@@ -67,36 +71,27 @@
 			}
 		};
 	</script>
-			
-
 #{/set} 
+
 #{set 'moreStyles'}
 	<style type="text/css">
-	#creditCardForm {
-		width: 700px;
-	}
-	
-	#creditCardForm label {
-		width: 350px;
-	}
-	
-	#creditCardForm strong {
-		width: 300px;
-	}
-	
-	#creditCardForm label.error,#creditCardForm input.submit {
-		margin-left: 350px;
-	}
+		#creditCardForm {width: 700px;}
+		#creditCardForm label {width: 350px;}
+		#creditCardForm strong {width: 300px;}
+		#creditCardForm label.error,#creditCardForm input.submit {margin-left: 350px;}
 	</style>
 #{/set}
 
 <form class="cmxform" id="creditCardForm" method="post" action="${purch?.transparentRedirectUrl}" enctype="multipart/form-data">
-	<p><strong>Type:</strong> ${purch.subscription.type}</p>
-	<p><strong>Description:</strong> ${purch.subscription.descr}</p>
-	<p><strong>Duration:</strong> ${purch.subscription.durationMonths}</p>
-	<p><strong>Price:</strong> ${purch.subscription.price}</p>
+	<p><strong>TODO:<br>Get subscription info from BrainTree Plan.<br>Localize strings.</strong></p><p></p>
+	<!-- Display the plan we are buying -->
+	<p><strong id="fancy" title="Silver, Gold or Platinum">Type:</strong> ${purch.subscription.type}</p>
+	<p><strong id="fancy" title="Plan details">Description:</strong> ${purch.subscription.descr}</p>
+	<p><strong id="fancy" title="Number of months for subscription">Duration:</strong> ${purch.subscription.durationMonths}</p>
+	<p><strong id="fancy" title="Total cost">Price:</strong> ${purch.subscription.price}</p>
 	
 	<fieldset>
+		<!-- the field we need to pass BrainTree sensitive info -->
 		#{field 'purch.trData'} 
 			<input type="hidden" name="tr_data" value="${purch?.trData}"> 
 		#{/field} 
@@ -109,6 +104,9 @@
 		<p>
 			<label for="cardnumber" id="fancy" title="This is any valid 16 digit credit card number"><strong>Card Number</strong></label> 
 			<input id="field2" name="field2" class="required"/> 
+			#{if playId != 'prod'}
+			<input name="ccBtn" id="ccBtn"value="Paste CC" type="button"/></a>
+			#{/if}
 			<!-- BrainTree needs name="credit_card[number]" field -->
 			<input type="hidden" id="ccNumber" name="credit_card[number]" /> 
 			<!-- Dummy card type, BrainTree figures it out for us -->
@@ -148,8 +146,8 @@
 		<br>
 		<p class="buttons">
 			<strong>
-	 		<input  type="submit" value="Submit" />&nbsp&nbsp&nbsp
-	 		<a href="/"><b>Cancel</b></a>&nbsp&nbsp&nbsp
+	 		<input  type="submit" value="Submit" id="fancy" title="Register the entered credit card number"/>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+	 		<a href="/" id="fancy" title="Do not register the credit card"><b>Cancel</b></a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 	 		</strong>
 	 	</p>
 			

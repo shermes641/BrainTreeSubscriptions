@@ -13,8 +13,8 @@ GET     /subscriptions                          Subscriptions.index
 GET     /subscriptions/list                     Subscriptions.list
 GET     /subscriptions/{id}                     Subscriptions.show
 GET     /subscriptions/{id}/buy                 Subscriptions.buy
-GET     /subscriptions/verifyCC                 Subscriptions.verifyCC
-POST    /subscriptions/verifyCC                 Subscriptions.verifyCC
+GET     /subscriptions/verifyCC/{qs}            Subscriptions.verifyCC
+POST    /subscriptions/verifyCC/{qs}            Subscriptions.verifyCC
 POST    /subscriptions/{id}/buy                 Subscriptions.confirmPurchase
 DELETE  /subscriptions/{id}                     Subscriptions.cancelPurchase
 GET     /settings                               Subscriptions.settings
@@ -22,7 +22,8 @@ POST    /settings                               Subscriptions.saveSettings
 
 GET     /braintree                              BrainTree.index
 GET     /braintree/list                         BrainTree.list
-GET     /braintree/{id}                         BrainTree.show
+GET     /braintree/show                         BrainTree.show
+DELETE  /braintree/{id}                         Subscriptions.cancelPurchase
 GET     /braintree/creditCard		            BrainTree.creditCard
 POST    /braintree/creditCard		            BrainTree.creditCard
 # Map static resources from the /app/public folder to the /public path

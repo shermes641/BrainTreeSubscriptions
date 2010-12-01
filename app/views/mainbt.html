@@ -28,6 +28,7 @@
                     <a href="@{Application.logout()}">Logout</a>
             #{/if}
             #{else}
+            	${user.id}
             	Not Connected
             	|
             	<a href="@{Application.index()}">Log In</a>

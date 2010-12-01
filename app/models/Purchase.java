@@ -15,31 +15,16 @@ public class Purchase extends Model {
     public User user;
     
     @Required
-    @ManyToOne
     public Subscription subscription;
     
-    @Required
     @Temporal(TemporalType.DATE) 
     public Date purchaseDate;
     public static String purchaseDateToolTip = "Required <br> Start date for Subscription<br>Select from calendar";
     	
-    @Required
     @Temporal(TemporalType.DATE)
     public Date expireDate;
     public static String expireDateToolTip = "Required <br> Expiration date for Subscription<br>Select from calendar";
     
-    //TODO get credit card from vault, if none in vault then have user save a cc to the vault
-    @Required(message="Credit card number is required")
-    @Match(value="^\\d{16}$", message="Credit card number must be numeric and 16 digits long")
-    public String creditCard;
-    public static String creditCardToolTip = "Required<br>Exactly 16 digits<br>Currently not validated as a valid card number";
-
-    @Required(message="Credit card name is required")
-    @MinSize(value=3, message="Credit card name is required")
-    @MaxSize(value=70, message="Credit card name is required")
-    public String creditCardName;
-    public static String creditCardNameToolTip = "Required<br>3 to 70 chars<br>Currently not validated as a valid card ";
-
     public int creditCardExpiryMonth;
     public int creditCardExpiryYear;
     //true = monthly renewal, else annual
@@ -85,7 +70,9 @@ public class Purchase extends Model {
      * @return	At least 1 month.
      */
     public int getMonths() {
-        return 1 + (int) ( expireDate.getTime() - purchaseDate.getTime() ) / 1000 / 60 / 60 / 24;
+        //////////TODO enforce required dates
+    	//return 1 + (int) ( expireDate.getTime() - purchaseDate.getTime() ) / 1000 / 60 / 60 / 24;
+    	return 12;
     }
 
     /**

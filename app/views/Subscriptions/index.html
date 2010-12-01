@@ -4,7 +4,16 @@
 <form>
         <input type="hidden" name="tr_data" >
 </form>
+<h1>TODO transaction history delete/add cc upgrade subscription</h1>
+#{if user.customerId == null || user.customerId == ""}
+	<center>
+	<h1>You must register to purchase a subscription</h1>
+	<br><br>	
+	<a href="#" onclick="window.location = '/register'; return true;"><input name="regBtn" id="regBtn"value="Register"  type="button"/></a>
+	<br><br></center>
 
+#{/if}
+#{else}
 <h1>Search Subscriptions</h1>
 <!-- 
 	Text box for searching on the type of Subscription.
@@ -113,4 +122,5 @@
            #{/list}
        </tbody>
    </table> 
+#{/else}
 #{/else}
