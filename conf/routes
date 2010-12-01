@@ -3,7 +3,6 @@
 # ~~~~
 
 GET     /                                       Application.index
-POST    /                                       Application.index
 POST    /login                                  Application.login
 GET     /logout                                 Application.logout
 GET     /register                               Application.register

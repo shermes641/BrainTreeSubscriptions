@@ -61,7 +61,7 @@ public class Subscriptions extends Application {
 						register(purch.user);
 					}
 					purch.trData = BrainTree.GetTrDataCreateCC(purch.user.customerId,
-							"localhost:8888/subscriptions/verifyCC", false);
+							"http://"+Http.Request.current().host+"/subscriptions/verifyCC", false);
 					// BrainTree.GetCreditCardTrData("http://184.106.128.160:8888/subscriptions/1/buy");
 
 					if (PROD_MODE)
@@ -155,7 +155,7 @@ public class Subscriptions extends Application {
 			register(purch.user);
 		}
 		purch.trData = BrainTree.GetTrDataCreateCC(purch.user.customerId,
-				"localhost:8888/subscriptions/verifyCC", false);
+				"http://"+Http.Request.current().host+"/subscriptions/verifyCC", false);
 		// BrainTree.GetCreditCardTrData("http://184.106.128.160:8888/subscriptions/1/buy");
 
 		if (PROD_MODE)

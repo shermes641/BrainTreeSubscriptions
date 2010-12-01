@@ -146,6 +146,11 @@ public class Application extends Controller {
     		return;
     	if (Http.Request.current().actionMethod.equals("cancelPurchase"))
     		return;
+        if(session.get(LOG) != null) 
+        	if(session.get(LOG).equals(LOG_OUT)) {
+        		session.put(LOG, null);
+        		return;
+        	}	
     	Subscriptions.index();
     }
 	
@@ -160,9 +165,6 @@ public class Application extends Controller {
         if(user != null) {
             return user;
         }
-        if(session.get(LOG) != null) 
-        	if(session.get(LOG).equals(LOG_OUT)) 
-        		session.put(LOG, null);
         String username = session.get(USER);
         if(username != null) {
             return User.find("byUsername", username).first();
@@ -273,13 +275,15 @@ public class Application extends Controller {
      * If a user is logged in then display the Subscriptions main page (Subscriptions index.html),<br> 
      * otherwise display the application login page (Application index.html)
      */
-    public static void index() {
+    /*
+	public static void index() {
     	User user = connected();
         if((user != null) && ((user.customerId == null) || (user.subId == null))) 
             Subscriptions.index();
         index(true);
     }
-    
+    */
+	
     public static void index(boolean bConnected) {
         List<Subscription> subscriptions = null;
        	subscriptions = Subscription.all().fetch();
@@ -335,7 +339,7 @@ public class Application extends Controller {
     			session.put(SUB_DESC, null);
     			session.put(SUB_ID, null);
     			session.put(SUB_TYPE, null);
-    			index();
+    			index(false);
     			break;
     	}
     }
@@ -345,25 +349,25 @@ public class Application extends Controller {
      * @param user 	data to fill form in
      */
     public static void register(User user) {
-        //render();
     	User connected = connected();
     	if (connected != null) {
     		if (connected.customerId != null)
-        	if (connected.customerId.equals(session.get(CUSTOMER))) {
-        		flash.success("%s , you are already registered with customer ID %s", connected.firstName,connected.customerId);
-        		Subscriptions.index();
-        	} 
+        		try {
+        			int custId = Integer.parseInt(connected.customerId);
+        			session.put(CUSTOMER, connected.customerId);
+        			//TODO validate custID with BrainTree
+        			if (custId != 0)
+        				custId = 0;
+        		} catch(Exception e){
+        			connected.customerId = null;
+        			//we can just continue because this user needs to register
+        		}
+        		if (connected.customerId != null)
+        			if (connected.customerId.equals(session.get(CUSTOMER))) {
+        				flash.success("%s , you are already registered with customer ID %s", connected.firstName,connected.customerId);
+        				Subscriptions.index();
+        			} 
         	
-    		try {
-    			int custId = Integer.parseInt(connected.customerId);
-    			session.put(CUSTOMER, connected.customerId);
-    			//TODO validate custID with BrainTree
-    			if (custId != 0)
-    				custId = 0;
-    		} catch(Exception e){
-    			connected.customerId = null;
-    			//we can just continue because this user needs to register
-    		}
     		user.copy(connected,COPY_ALL);
     		user.id = connected.id;
     	}	
@@ -372,7 +376,9 @@ public class Application extends Controller {
     	if (user.lang == null)
     		user.lang = "en";
     	session.put(REGISTER, REGISTER);
-        render("@register", user);
+		renderArgs.put(USER, user);
+    	flash.success("Here is where you register for our payment service");
+        render("@register");
     }
     
     /**
@@ -488,7 +494,7 @@ public class Application extends Controller {
             session.put(LOG, LOG_IN);
             Subscriptions.index();         
         }
-        index();
+        index(true);
     }
     
     /**
@@ -497,7 +503,7 @@ public class Application extends Controller {
     public static void logout() {
         session.clear();
         session.put(LOG, LOG_OUT);
-        index();
+        index(false);
     }
 
 }

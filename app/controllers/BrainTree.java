@@ -52,7 +52,7 @@ public class BrainTree extends Controller {
     static void checkUser() {
         if(Application.connected() == null) {
             flash.error("Please log in first");
-            Application.index();
+            Application.index(false);
         } 
         User user = Application.connected();
         String sCust = session.get(Application.CUSTOMER);
