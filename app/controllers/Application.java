@@ -102,7 +102,7 @@ public class Application extends Controller {
 					user = User.find("byUsername", qs).first();
 					if(user != null){
 						session.clear();
-				        session.put(LOG, LOG_OUT);
+				        session.put(LOG, LOG_IN);
 						renderArgs.put(USER, user);
 					}
 				} 
